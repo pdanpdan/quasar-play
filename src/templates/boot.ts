@@ -34,28 +34,25 @@ VueI18n:
 }
 */
 
-// import { createPinia } from 'pinia';
-// import { createRouter, createWebHashHistory } from 'vue-router';
-// import { createI18n } from 'vue-i18n';
+import { createPinia } from 'pinia';
+import { createI18n } from 'vue-i18n';
+import { createRouter, createMemoryHistory } from 'vue-router';
+import { h } from 'vue';
 
 // function is awaited before continue
 export default function ( { app }: { app: App; } ) {
-  /*
-  app.use(createPinia());
-  */
+  app.use( createPinia() );
 
-  /*
-  app.use(createRouter({
-    history: createWebHashHistory(),
+  app.use( createRouter( {
+    history: createMemoryHistory(),
     routes: [
-      { path: '/', component: { template: '<div>Home</div>' } },
-      { path: '/about', component: { template: '<div>About</div>' } },
+      { path: '/', component: { render() { return h( 'div', [ 'Home' ] ); } } },
+      { path: '/about', component: { render() { return h( 'div', [ 'About' ] ); } } },
     ],
-  }));
-  */
+  } ) );
 
-  /*
-  app.use(createI18n({
+  app.use( createI18n( {
+    legacy: false,
     locale: 'jp',
     fallbackLocale: 'en',
     messages: {
@@ -70,8 +67,7 @@ export default function ( { app }: { app: App; } ) {
         },
       },
     },
-  }));
-  */
+  } ) );
 
   app.use( Quasar, {
     plugins: {

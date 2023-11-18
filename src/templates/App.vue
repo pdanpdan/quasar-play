@@ -2,15 +2,38 @@
   <div class="col column no-wrap">
     <q-toolbar class="bg-primary text-white">
       <q-toolbar-title>Quasar Play</q-toolbar-title>
+
+      <q-tabs>
+        <q-route-tab to="/" label="Home" />
+        <q-route-tab to="/about" label="About" />
+      </q-tabs>
     </q-toolbar>
 
     <div class="col q-pa-md flex flex-center">
-      <q-btn
-        unelevated
-        color="accent"
-        :label="`Click here${ count > 0 ? ` - you already did it ${ count } times` : ''}`"
-        @click="count += 1"
-      />
+      <div class="column items-center q-gutter-md">
+        <q-option-group
+          :model-value="locale"
+          :options="langOptions"
+          inline
+          dense
+          @update:model-value="changeLocale"
+        />
+        <div>{{ $t('message.hello') }}</div>
+
+        <q-btn
+          unelevated
+          color="accent"
+          :label="`Click here${
+            counterStore.count > 0 ? ` - you already did it ${counterStore.count} times` : ''
+          }`"
+          @click="counterStore.count += 1"
+        />
+
+        <div>Double that is {{ counterStore.doubleCount }}</div>
+
+        <div>You are viewing this page</div>
+        <router-view class="q-pa-lg" style="border: 2px solid #999" />
+      </div>
     </div>
   </div>
 </template>
@@ -25,7 +48,18 @@
 </style>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useCounterStore } from './counter';
+import { useI18n } from 'vue-i18n';
 
-const count = ref(0);
+const counterStore = useCounterStore();
+const { locale } = useI18n();
+
+const langOptions = [
+  { label: 'English', value: 'en' },
+  { label: 'Japanese', value: 'jp' },
+];
+
+function changeLocale(newLocale) {
+  locale.value = newLocale;
+}
 </script>
