@@ -22,6 +22,8 @@ const app = createApp( {
 
     if ( savedDarkMode !== undefined ) {
       $q.dark.set( savedDarkMode === 'true' );
+    } else {
+      $q.dark.set( window.matchMedia && window.matchMedia( 'prefers-color-scheme: dark' ).matches );
     }
 
     watchEffect( () => {
