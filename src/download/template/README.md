@@ -2,6 +2,8 @@
 
 This is a project template using [Vite](https://vitejs.dev/). It requires [Node.js](https://nodejs.org) v18+.
 
+It was created using [Quasar Play](https://pdanpdan.github.io/quasar-play/).
+
 To start in DEV mode:
 
 ```sh
