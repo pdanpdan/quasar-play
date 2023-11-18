@@ -121,7 +121,17 @@ export function useReplStore( options: ReplOptions = {} ) {
     files[ IMPORT_MAP ] = new File(
       IMPORT_MAP,
       JSON.stringify( {
-        imports: {},
+        imports: {
+          '@vue/devtools-api': 'https://unpkg.com/@vue/devtools-api@latest/lib/esm/index.js',
+          '@intlify/shared': 'https://unpkg.com/@intlify/shared@latest/dist/shared.esm-bundler.js',
+          '@intlify/core-base': 'https://unpkg.com/@intlify/core-base@latest/dist/core-base.esm-bundler.js',
+          '@intlify/message-compiler': 'https://unpkg.com/@intlify/message-compiler@latest/dist/message-compiler.esm-bundler.js',
+          'source-map-js': 'https://unpkg.com/source-map-js/source-map.js',
+          'vue-i18n': 'https://unpkg.com/vue-i18n@latest/dist/vue-i18n.esm-bundler.js',
+          pinia: 'https://unpkg.com/pinia@latest/dist/pinia.esm-browser.js',
+          'vue-demi': 'https://unpkg.com/vue-demi@latest/lib/index.mjs',
+          'vue-router': 'https://unpkg.com/vue-router@latest/dist/vue-router.esm-bundler.js',
+        },
       }, undefined, 2 ) + '\n' );
   }
 
