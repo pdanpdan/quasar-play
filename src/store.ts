@@ -9,6 +9,7 @@ import { locale } from './utils/locale';
 import mainCode from './templates/main.ts?raw';
 import bootCode from './templates/boot.ts?raw';
 import appCode from './templates/App.vue?raw';
+import counterCode from './templates/counter.ts?raw';
 import settingsCode from './templates/QuasarSettings.vue?raw';
 import tsconfigCode from './templates/tsconfig.json?raw';
 
@@ -37,6 +38,7 @@ const TSCONFIG = 'tsconfig.json';
 const mainFile = 'src/main.ts';
 const bootFile = 'src/boot.ts';
 const appFile = 'src/App.vue';
+const counterFile = 'src/counter.ts';
 const settingsFile = 'src/QuasarSettings.vue';
 
 const pkgPathMap: Record<string, string | PathMeta> = {
@@ -109,6 +111,7 @@ export function useReplStore( options: ReplOptions = {} ) {
   } else {
     files[ bootFile ] = new File( bootFile, bootCode );
     files[ appFile ] = new File( appFile, appCode );
+    files[ counterFile ] = new File( counterFile, counterCode );
   }
 
   for ( const name of Object.keys( internalFiles ) ) {
