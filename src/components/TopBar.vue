@@ -331,7 +331,7 @@ function reset() {
     },
     focus: 'cancel',
   }).onOk(() => {
-    location.href = location.origin;
+    location.href = `${ location.origin }${ location.pathname }`;
   });
 }
 
