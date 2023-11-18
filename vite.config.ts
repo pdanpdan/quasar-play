@@ -19,6 +19,7 @@ const getVersion = ( name: string ) => {
 };
 
 export default defineConfig( () => ( {
+  base: '/quasar-play/',
   define: {
     __VERSION__: JSON.stringify( quasarPkg.version ),
     __VUE_VERSION__: JSON.stringify( getVersion( 'vue' ) ),
