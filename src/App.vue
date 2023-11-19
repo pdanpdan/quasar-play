@@ -5,7 +5,7 @@
     <repl
       class="col"
       :theme="$q.dark.isActive ? 'dark' : 'light'"
-      :editor="Monaco"
+      :editor="(editor as any)"
       :store="store"
       :ssr="ssr"
       :sfc-options="sfcOptions"
@@ -17,13 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue';
+import { watchEffect, shallowRef } from 'vue';
+import merge from 'deepmerge';
 
 import { Repl } from '@vue/repl';
 import TopBar from './components/TopBar.vue';
 
-import Monaco from '@vue/repl/monaco-editor';
-// import CodeMirror from '@vue/repl/codemirror-editor'
 import { useReplStore } from './store';
 import { prettierCode } from './utils/format';
 
@@ -50,25 +49,51 @@ async function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+const urlSearch = new URLSearchParams( location.search );
+
+const editor = shallowRef( {} );
+const editorName = (urlSearch.get( 'editor' ) || 'monaco').toLowerCase();
+import( editorName.includes( 'mir' ) ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor' ).then( ( component ) => {
+  editor.value = component.default;
+} );
+
 // enable experimental features
-const sfcOptions = {
+let sfcOptions = {
   script: {
     // refTransform: true,
     // reactivityTransform: true
   },
 };
-const previewOptions = {
+try {
+  const obj = JSON.parse( urlSearch.get( 'sfcOptions' ) || urlSearch.get( 'sfc-options' ) || 'null' );
+  if ( obj === Object( obj ) ) {
+    sfcOptions = merge( sfcOptions, obj );
+  }
+} catch ( e ) {
+  // caught
+}
+
+let previewOptions = {
   headHTML: [
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons">',
   ].join('\n'),
 };
+try {
+  const obj = JSON.parse( urlSearch.get( 'previewOptions' ) || urlSearch.get( 'preview-options' ) || 'null' );
+  if ( obj === Object( obj ) ) {
+    previewOptions = merge( previewOptions, obj );
+  }
+} catch ( e ) {
+  // caught
+}
+
 const versions = parseVersions();
-const hash = location.hash.slice( 1 );
 
 const store = useReplStore({
-  serializedState: hash,
+  serializedState: location.hash.slice( 1 ),
   versions,
-  showOutput: ( new URLSearchParams( location.search ) ).has( 'preview' ),
+  showOutput: [ '', 'true', 't', '1' ].includes( String( urlSearch.get( 'preview' ) ).toLowerCase() ),
+  outputMode: ( urlSearch.get( 'previewMode' ) || urlSearch.get( 'preview-mode' ) || 'preview' ).toLowerCase(),
 });
 
 const { ssr } = store;

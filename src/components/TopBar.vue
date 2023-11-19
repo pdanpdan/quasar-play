@@ -178,7 +178,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import type { PropType } from 'vue';
-import { useQuasar, copyToClipboard, Dialog, Notify } from 'quasar';
+import { useQuasar, Dialog } from 'quasar';
 
 import {
   symOutlinedTune,
@@ -195,6 +195,8 @@ import {
 } from '@quasar/extras/mdi-v7';
 import LogoDark from '../assets/logo-dark.svg?url';
 import LogoLight from '../assets/logo-light.svg?url';
+
+import ShareDialog from './ShareDialog.vue';
 
 import { cdnTemplates, cdn, setCdn } from '../utils/cdn';
 import { locale } from '../utils/locale';
@@ -319,13 +321,8 @@ function toggleDark() {
   $q.dark.set($q.dark.isActive !== true);
 }
 
-async function copyLink() {
-  await copyToClipboard(location.href);
-
-  Notify.create({
-    type: 'positive',
-    message: locale.doneShare,
-  });
+function copyLink() {
+  Dialog.create( { component: ShareDialog } );
 }
 
 function download() {

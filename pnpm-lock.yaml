@@ -11,6 +11,9 @@ dependencies:
   '@vue/repl':
     specifier: ^2.7.0
     version: 2.7.0
+  deepmerge:
+    specifier: ^4.3.1
+    version: 4.3.1
   fflate:
     specifier: ^0.8.1
     version: 0.8.1
@@ -2551,7 +2554,6 @@ packages:
   /deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /define-data-property@1.1.1:
     resolution: {integrity: sha512-E7uGkTzkk1d0ByLeSc6ZsFS79Axg+m1P/VsgYsxHgiuc3tFSj+MjMIwe90FC4lOAZzNBdY7kkO2P2wKdsQ1vgQ==}
