@@ -1,6 +1,6 @@
 {
   "name": "@pdanpdan/quasar-play",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Playground for Quasar Framework",
   "productName": "Quasar Play",
   "author": {
@@ -41,6 +41,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.8",
     "@vue/repl": "^2.7.0",
+    "deepmerge": "^4.3.1",
     "fflate": "^0.8.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",

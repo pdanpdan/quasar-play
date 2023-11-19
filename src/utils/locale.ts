@@ -1,14 +1,26 @@
 const config = {
   en: {
     cancel: 'Cancel',
+    close: 'Close settings panel',
     doDelete: 'Are you sure you want to delete #{0}?',
     del: 'Delete',
     doDownload: 'Download project files?',
     download: 'Download project',
-    doReset: 'Reset (delete) all files?',
-    reset: 'Reset',
+    doReset: 'Reset (delete) all files in project?',
+    reset: 'Reset (delete) project',
     doneShare: 'Sharable URL has been copied to clipboard',
-    share: 'Copy link',
+    share: 'Share project',
+    shareCopy: 'Copy to clipboard',
+    shareOptions: {
+      output: 'Start in Output mode',
+      code: 'Start in Code mode',
+      outputPreview: 'Start with Output Preview',
+      outputJs: 'Start with JS Preview',
+      outputCss: 'Start with CSS Preview',
+      outputSSR: 'Start with SSR Preview',
+      editorMonaco: 'Use Monaco editor - full featured, bigger size',
+      editorMirror: 'Use CodeMirror editor - smaller size',
+    },
     cdn: 'Change CDN',
     other: 'Other',
     loading: 'Loading #{0}...',
@@ -16,6 +28,14 @@ const config = {
     theme: {
       dark: 'Use light mode',
       light: 'Use dark mode',
+    },
+    ssr: {
+      on: 'Use Client mode',
+      off: 'Use SSR mode',
+    },
+    prod: {
+      on: 'Use DEV mode',
+      off: 'Use PROD mode',
     },
   },
 };

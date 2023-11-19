@@ -13,18 +13,31 @@
       href="//quasar.dev"
     />
 
-    <q-separator vertical spaced :dark="$q.dark.isActive" />
-
-    <div class="text-caption text-grey-7">
+    <div v-if="$q.screen.gt.md" class="text-caption text-grey-7 q-ml-sm q-mr-md">
       <div v-for="ver in libVersions" :key="ver" style="line-height: 1.3">{{ ver }}</div>
     </div>
 
-    <q-separator vertical spaced :dark="$q.dark.isActive" />
+    <q-btn
+      v-if="$q.screen.lt.lg"
+      flat
+      round
+      padding="sm"
+      :icon="symOutlinedTune"
+      @click="overlayVisible = overlayVisible !== true"
+    />
 
     <div
-      :class="$q.screen.gt.md ? 'row items-center' : `column items-stretch play__settings-overlay play__settings-overlay--${ overlayVisible === true ? 'opened' : 'closed' }`"
-      class="col q-gutter-sm"
+      :class="
+        $q.screen.gt.md
+          ? 'row items-center q-gutter-x-sm'
+          : `column items-stretch q-gutter-y-sm play__settings-overlay play__settings-overlay--${ overlayVisible === true ? 'opened' : 'closed' }`
+      "
+      class="col"
     >
+      <div v-if="$q.screen.lt.lg" class="row justify-between text-caption text-grey-7">
+        <div v-for="ver in libVersions" :key="ver">{{ ver }}</div>
+      </div>
+
       <q-select
         v-for="(meta, pkg) in repoMeta"
         :key="pkg"
@@ -56,86 +69,86 @@
 
       <q-space />
 
-      <div>
-        <div class="row q-gutter-sm">
-          <q-btn-group flat>
-            <q-btn
-              style="min-width: 7ch"
-              flat
-              :color="productionMode === true ? 'accent' : 'primary'"
-              padding="sm"
-              :label="productionMode === true ? 'PROD' : 'DEV'"
-              @click="toggleProductionMode"
-            />
-
-            <q-btn
-              style="min-width: 9ch"
-              flat
-              :color="ssr === true ? 'accent' : 'primary'"
-              padding="sm"
-              :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
-              @click="toggleSSR"
-            />
-          </q-btn-group>
-
-          <q-space v-if="$q.screen.lt.lg" />
-
+      <div class="row q-gutter-x-sm">
+        <q-btn-group flat>
           <q-btn
+            style="min-width: 7ch"
             flat
-            round
+            :color="productionMode === true ? 'accent' : 'primary'"
             padding="sm"
-            :icon="symOutlinedShare"
-            :aria-label="locale.share"
-            :title="locale.share"
-            @click="copyLink"
+            :label="productionMode === true ? 'PROD' : 'DEV'"
+            :aria-label="productionMode === true ? locale.prod.on : locale.prod.off"
+            :title="productionMode === true ? locale.prod.on : locale.prod.off"
+            @click="toggleProductionMode"
           />
 
           <q-btn
+            style="min-width: 9ch"
             flat
-            round
+            :color="ssr === true ? 'accent' : 'primary'"
             padding="sm"
-            :icon="symOutlinedDownload"
-            :aria-label="locale.download"
-            :title="locale.download"
-            @click="download"
+            :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
+            :aria-label="ssr === true ? locale.ssr.on : locale.ssr.off"
+            :title="ssr === true ? locale.ssr.on : locale.ssr.off"
+            @click="toggleSSR"
           />
+        </q-btn-group>
 
-          <q-btn
-            flat
-            round
-            padding="sm"
-            :icon="symOutlinedSubtitles"
-            :aria-label="locale.format"
-            :title="locale.format"
-            @click="formatCodes"
-          />
+        <q-space v-if="$q.screen.lt.lg" class="q-px-lg" />
 
-          <q-space v-if="$q.screen.lt.lg" />
-
-          <q-btn
-            flat
-            round
-            padding="sm"
-            color="negative"
-            :icon="symOutlinedDeleteForever"
-            :aria-label="locale.reset"
-            :title="locale.reset"
-            @click="reset"
-          />
-        </div>
+        <q-btn
+          flat
+          round
+          padding="sm"
+          color="negative"
+          :icon="symOutlinedDeleteForever"
+          :aria-label="locale.reset"
+          :title="locale.reset"
+          @click="reset"
+        />
       </div>
+
+      <q-btn
+        v-if="$q.screen.lt.lg"
+        flat
+        :icon="symOutlinedExpandLess"
+        :aria-label="locale.close"
+        :title="locale.close"
+        @click="overlayVisible = overlayVisible !== true"
+      />
     </div>
 
     <q-space />
 
     <div class="row q-gutter-sm q-pl-sm">
       <q-btn
-        v-if="$q.screen.lt.lg"
         flat
         round
         padding="sm"
-        :icon="symOutlinedTune"
-        @click="overlayVisible = overlayVisible !== true"
+        :icon="symOutlinedShare"
+        :aria-label="locale.share"
+        :title="locale.share"
+        @click="copyLink"
+      />
+
+      <q-btn
+        flat
+        round
+        padding="sm"
+        :icon="symOutlinedDownload"
+        :aria-label="locale.download"
+        :title="locale.download"
+        @click="download"
+      />
+
+      <q-btn
+        flat
+        round
+        padding="sm"
+        :icon="symOutlinedFormatAlignLeft"
+        :aria-label="locale.format"
+        :title="locale.format"
+        @click="formatCodes"
       />
 
       <q-btn
@@ -165,7 +178,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import type { PropType } from 'vue';
-import { useQuasar, copyToClipboard, Dialog, Notify } from 'quasar';
+import { useQuasar, Dialog } from 'quasar';
 
 import {
   symOutlinedTune,
@@ -173,14 +186,17 @@ import {
   symOutlinedLightMode,
   symOutlinedShare,
   symOutlinedDownload,
-  symOutlinedSubtitles,
+  symOutlinedFormatAlignLeft,
   symOutlinedDeleteForever,
+  symOutlinedExpandLess,
 } from '@quasar/extras/material-symbols-outlined';
 import {
   mdiGithub,
 } from '@quasar/extras/mdi-v7';
 import LogoDark from '../assets/logo-dark.svg?url';
 import LogoLight from '../assets/logo-light.svg?url';
+
+import ShareDialog from './ShareDialog.vue';
 
 import { cdnTemplates, cdn, setCdn } from '../utils/cdn';
 import { locale } from '../utils/locale';
@@ -305,13 +321,8 @@ function toggleDark() {
   $q.dark.set($q.dark.isActive !== true);
 }
 
-async function copyLink() {
-  await copyToClipboard(location.href);
-
-  Notify.create({
-    type: 'positive',
-    message: locale.doneShare,
-  });
+function copyLink() {
+  Dialog.create( { component: ShareDialog } );
 }
 
 function download() {
@@ -411,10 +422,11 @@ body.desktop .q-select__options-list
     z-index: -1
     background-color: var(--play-bg-color-base)
     position: absolute
-    inset: 100% 0 auto 0
+    inset: 100% auto auto 0
     max-width: unset !important
-    padding: 16px 16px 32px
+    padding: 16px 16px 8px
     transition: var(--play-transition-transform)
+    filter: drop-shadow(2px 2px 4px #6666)
 
     &--closed
       transform: translate3d(0, -100%, -1px)
