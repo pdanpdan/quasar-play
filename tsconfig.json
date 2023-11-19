@@ -17,7 +17,7 @@
     "baseUrl": ".",
     "outDir": "dist",
     "types": [
-      "vite/client",
+      "vite/client"
     ],
     "lib": [
       "esnext",
