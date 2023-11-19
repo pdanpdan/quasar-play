@@ -141,6 +141,9 @@ await store.init();
       --color-branding: #{$primary}
       --color-branding-dark: #{color.scale($primary, $lightness: 30%)}
 
+    .CodeMirror
+      --cursor: #fff
+
 body
   background: var(--play-bg-color-base) !important
   color: var(--play-fg-color-base) !important
