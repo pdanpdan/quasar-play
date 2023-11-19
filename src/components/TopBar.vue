@@ -58,14 +58,27 @@
 
       <div>
         <div class="row q-gutter-sm">
-          <q-btn
-            style="min-width: 9ch"
-            flat
-            :color="ssr === true ? 'primary' : ''"
-            padding="sm"
-            :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
-            @click="toggleSSR"
-          />
+          <q-btn-group flat>
+            <q-btn
+              style="min-width: 7ch"
+              flat
+              :color="productionMode === true ? 'accent' : 'primary'"
+              padding="sm"
+              :label="productionMode === true ? 'PROD' : 'DEV'"
+              @click="toggleProductionMode"
+            />
+
+            <q-btn
+              style="min-width: 9ch"
+              flat
+              :color="ssr === true ? 'accent' : 'primary'"
+              padding="sm"
+              :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
+              @click="toggleSSR"
+            />
+          </q-btn-group>
+
+          <q-space v-if="$q.screen.lt.lg" />
 
           <q-btn
             flat
@@ -279,9 +292,13 @@ onUnmounted(() => {
   window.removeEventListener('blur', handleWindowBlur);
 });
 
-const { ssr } = props.store;
+const { ssr, productionMode } = props.store;
 function toggleSSR() {
   ssr.value = ssr.value !== true;
+}
+
+function toggleProductionMode() {
+  productionMode.value = productionMode.value !== true;
 }
 
 function toggleDark() {
@@ -385,7 +402,7 @@ body.desktop .q-select__options-list
 
 .play
   &__top-bar
-    z-index: 1
+    z-index: 20
     position: relative
     background: var(--play-bg-color-base)
     transform-style: preserve-3d

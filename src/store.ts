@@ -42,7 +42,7 @@ const counterFile = 'src/counter.ts';
 const settingsFile = 'src/QuasarSettings.vue';
 
 const pkgPathMap: Record<string, string | PathMeta> = {
-  vue: 'dist/vue.runtime.esm-browser.js',
+  vue: 'dist/vue.{{production}}esm-browser.js',
   'vue/server-renderer': {
     pkg: '@vue/server-renderer',
     path: 'dist/server-renderer.esm-browser.js',
@@ -154,6 +154,8 @@ export function useReplStore( options: ReplOptions = {} ) {
     typescriptVersion: computed( () => versions.typescript || 'latest' ),
   } );
 
+  const productionMode = ref( false );
+
   const customImports = computed( () => {
     const code = state.files[ IMPORT_MAP ]?.code.trim();
     let map: ImportMap = {};
@@ -168,7 +170,7 @@ export function useReplStore( options: ReplOptions = {} ) {
 
     return map;
   } );
-  const internalImports = computed( () => buildImports( versions ) );
+  const internalImports = computed( () => buildImports( versions, productionMode.value ) );
   const importMap = computed( () => {
     return <ImportMap>{
       imports: {
@@ -219,7 +221,7 @@ export function useReplStore( options: ReplOptions = {} ) {
     return `src/${ origin }`;
   }
 
-  function buildImports( versions: Record<string, string> = {} ) {
+  function buildImports( versions: Record<string, string> = {}, prod: boolean = false ) {
     const imports: Record<string, string> = {};
 
     for ( const name of Object.keys( pkgPathMap ) ) {
@@ -238,7 +240,8 @@ export function useReplStore( options: ReplOptions = {} ) {
 
       if ( !pkg || !path ) continue;
 
-      imports[ name ] = getCdnUrl( pkg, path, versions[ pkg ] || 'latest' );
+      const prodReplace = prod === true ? 'runtime.' : '';
+      imports[ name ] = getCdnUrl( pkg, path, versions[ pkg ] || 'latest' ).replace( '{{production}}', prodReplace );
     }
 
     return imports;
@@ -371,6 +374,7 @@ export function useReplStore( options: ReplOptions = {} ) {
     ...store,
 
     ssr: ref( false ),
+    productionMode,
     versions,
     init,
     serialize,
