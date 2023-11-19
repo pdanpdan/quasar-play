@@ -9,6 +9,13 @@
     <q-btn
       flat
       dense
+      icon="refresh"
+      @click="onReload"
+    />
+
+    <q-btn
+      flat
+      dense
       :icon="$q.dark.isActive ? 'dark_mode' : 'light_mode'"
       @click="$q.dark.set($q.dark.isActive !== true)"
     />
@@ -21,3 +28,9 @@
     />
   </q-bar>
 </template>
+
+<script setup lang="ts">
+function onReload() {
+  location.reload();
+}
+</script>
