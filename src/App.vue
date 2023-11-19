@@ -63,11 +63,12 @@ const previewOptions = {
   ].join('\n'),
 };
 const versions = parseVersions();
-const hash = location.hash.slice(1);
+const hash = location.hash.slice( 1 );
 
 const store = useReplStore({
   serializedState: hash,
   versions,
+  showOutput: ( new URLSearchParams( location.search ) ).has( 'preview' ),
 });
 
 const { ssr } = store;
