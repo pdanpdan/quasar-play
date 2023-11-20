@@ -1,75 +1,94 @@
 import { saveAs } from 'file-saver';
 
-import index from './template/index.html?raw';
-import main from './template/main.ts?raw';
-import pkg from './template/package.json';
-import config from './template/vite.config.js?raw';
-import readme from './template/README.md?raw';
-import vueDts from './template/vue.d.ts?raw';
+import indexFile from './template/index.html?raw';
+import mainFile from './template/main.ts?raw';
+import packageFile from './template/package.json';
+import readmeFile from './template/README.md?raw';
+import viteConfigFile from './template/vite.config.js?raw';
+import vueDtsFile from './template/vue.d.ts?raw';
 import LogoDark from '../assets/logo-dark.svg?raw';
 import LogoLight from '../assets/logo-light.svg?raw';
 
-import type { ReplStore } from '../store';
+import type { ReplStoreType } from '../store';
 
-export async function downloadProject( store: ReplStore ) {
-  const { default: JSZip } = await import( 'jszip' );
+const internalImports = [
+  '@vue/devtools-api',
+  '@intlify/shared',
+  '@intlify/core-base',
+  '@intlify/message-compiler',
+  'source-map-js',
+  'vue-demi',
+  '@quasar/extras/roboto-font/roboto-font.css',
+  '@quasar/extras/material-icons/material-icons.css',
+  'vue/server-renderer',
+];
+
+export async function downloadProject(store: ReplStoreType) {
+  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
-  const dependencies = store.getDependencies();
   const versions: Record<string, string> = {
     vue: __VUE_VERSION__,
-    quasar: __VERSION__,
+    quasar: __QUASAR_VERSION__,
+    typescript: __TS_VERSION__,
     ...store.versions,
   };
 
+  const { imports } = store.replStore.getImportMap();
+  const reVer = /@(^\/)+/;
+  Object.keys(imports).map((name) => {
+    const matchVer = reVer.exec(imports[ name ]);
+    const version = (matchVer !== null ? matchVer[ 1 ] : '') || 'latest';
 
-  dependencies.forEach( ( { name, version } ) => {
-    if ( pkg.dependencies && !( pkg.dependencies as Record<string, string> )[ name ] ) {
-      ( pkg.dependencies as Record<string, string> )[ name ] = `${ version }`;
+    if (internalImports.includes(name) === false && packageFile.dependencies && !(packageFile.dependencies as Record<string, string>)[ name ]) {
+      (packageFile.dependencies as Record<string, string>)[ name ] = `${ version }`;
     }
-    if ( pkg.devDependencies && !( pkg.devDependencies as Record<string, string> )[ name ] ) {
-      ( pkg.devDependencies as Record<string, string> )[ name ] = `${ version }`;
-    }
-  } );
+  });
 
-  if ( pkg.dependencies ) {
-    for ( const name of Object.keys( pkg.dependencies ) ) {
-      if ( versions[ name ] ) {
-        ( pkg.dependencies as Record<string, string> )[ name ] = `${ versions[ name ] }`;
+  if (packageFile.dependencies) {
+    for (const name of Object.keys(packageFile.dependencies)) {
+      if (versions[ name ]) {
+        (packageFile.dependencies as Record<string, string>)[ name ] = `${ versions[ name ] }`;
       }
     }
   }
 
-  if ( pkg.devDependencies ) {
-    for ( const name of Object.keys( pkg.devDependencies ) ) {
-      if ( versions[ name ] ) {
-        ( pkg.devDependencies as Record<string, string> )[ name ] = `${ versions[ name ] }`;
+  if (packageFile.devDependencies) {
+    for (const name of Object.keys(packageFile.devDependencies)) {
+      if (versions[ name ]) {
+        (packageFile.devDependencies as Record<string, string>)[ name ] = `${ versions[ name ] }`;
       }
     }
   }
 
-  const files = store.getFiles();
+  const files = store.replStore.getFiles();
 
-  for ( const file in files ) {
-    if ( file === 'import-map.json' ) {
+  const ignoredFiles = [
+    'import-map.json',
+    'main.vue',
+    'QuasarSettings.vue',
+  ];
+
+  for (const file in files) {
+    if (ignoredFiles.includes(file)) {
       continue;
     }
 
-    zip.file( file, files[ file ] );
+    zip.file(`${ file === 'tsconfig.json' || file.indexOf('src/') === 0 ? '' : 'src/' }${ file }`, files[ file ]);
   }
 
   // basic structure
-  zip.file( 'index.html', index );
-  zip.file( 'package.json', JSON.stringify( pkg, null, 2 ) + '\n' );
-  zip.file( 'vite.config.js', config );
-  zip.file( 'README.md', readme );
+  zip.file('index.html', indexFile);
+  zip.file('package.json', JSON.stringify(packageFile, null, 2) + '\n');
+  zip.file('vite.config.js', viteConfigFile);
+  zip.file('README.md', readmeFile);
 
-  zip.file( 'public/logo-dark.svg', LogoDark );
-  zip.file( 'public/logo-light.svg', LogoLight );
+  zip.file('public/logo-dark.svg', LogoDark);
+  zip.file('public/logo-light.svg', LogoLight);
 
-  zip.file( 'src/main.ts', main );
-  zip.file( 'src/vue.d.ts', vueDts );
+  zip.file('src/main.ts', mainFile);
+  zip.file('src/vue.d.ts', vueDtsFile);
 
-  const blob = await zip.generateAsync( { type: 'blob' } );
+  const blob = await zip.generateAsync({ type: 'blob' });
 
-  saveAs( blob, 'quasar_play_project.zip' );
+  saveAs(blob, 'quasar_play_project.zip');
 }

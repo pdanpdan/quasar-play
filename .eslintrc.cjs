@@ -7,7 +7,7 @@ module.exports = {
   globals: {
     __REPL_VERSION__: true,
     __PLAY_VERSION__: true,
-    __VERSION__: true,
+    __QUASAR_VERSION__: true,
     __VUE_VERSION__: true,
     __TS_VERSION__: true,
 
@@ -64,6 +64,7 @@ module.exports = {
       'single',
       {
         avoidEscape: true,
+        allowTemplateLiterals: true,
       },
     ],
     semi: 'off',
@@ -86,6 +87,10 @@ module.exports = {
     '@typescript-eslint/keyword-spacing': 'error',
     'key-spacing': 'off',
     '@typescript-eslint/key-spacing': 'error',
+    'space-in-parens': [
+      'error',
+      'never',
+    ],
     '@typescript-eslint/no-explicit-any': [
       'error',
       { fixToUnknown: true, ignoreRestArgs: true },
@@ -99,4 +104,6 @@ module.exports = {
       'always',
     ],
   },
+
+
 };

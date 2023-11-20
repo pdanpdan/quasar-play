@@ -1,5 +1,5 @@
 <template>
-  <div class="col column no-wrap">
+  <div class="column no-wrap">
     <q-toolbar class="bg-primary text-white">
       <q-toolbar-title>Quasar Play</q-toolbar-title>
 
@@ -16,7 +16,7 @@
           :options="langOptions"
           inline
           dense
-          @update:model-value="changeLocale"
+          @update:model-value="locale = $event"
         />
         <div>{{ $t('message.hello') }}</div>
 
@@ -48,8 +48,9 @@
 </style>
 
 <script setup lang="ts">
-import { useCounterStore } from './counter';
 import { useI18n } from 'vue-i18n';
+
+import { useCounterStore } from './counter';
 
 const counterStore = useCounterStore();
 const { locale } = useI18n();
@@ -58,8 +59,4 @@ const langOptions = [
   { label: 'English', value: 'en' },
   { label: 'Japanese', value: 'jp' },
 ];
-
-function changeLocale(newLocale) {
-  locale.value = newLocale;
-}
 </script>

@@ -4,11 +4,11 @@ import { locale } from './locale';
 
 import type { BuiltInParserName, Plugin } from 'prettier';
 
-function load( path: string ) {
-  return import(/* @vite-ignore */ getCdnUrl( 'prettier', path ) );
+function load(path: string) {
+  return import(/* @vite-ignore */ getCdnUrl('prettier', path));
 }
 
-let format: typeof import( 'prettier' ).format | undefined;
+let format: typeof import('prettier').format | undefined;
 let plugins: Plugin[];
 
 const parsers: Record<string, BuiltInParserName> = {
@@ -18,37 +18,35 @@ const parsers: Record<string, BuiltInParserName> = {
   json: 'json',
 };
 
-export async function prettierCode( name: string, code: string ) {
-  if ( !format ) {
-    const close = Notify.create( {
+export async function prettierCode(name: string, code: string) {
+  if (!format) {
+    Notify.create({
       type: 'info',
-      message: locale.loading.replace( '#{0}', 'Prettier' ),
-    } );
+      message: locale.loading.replace('#{0}', 'Prettier'),
+    });
 
-    [ format, ...plugins ] = await Promise.all( [
-      load( 'standalone.mjs' ).then( ( m ) => m.default.format ),
-      load( 'plugins/estree.mjs' ).then( ( m ) => m.default ),
-      load( 'plugins/html.mjs' ).then( ( m ) => m.default ),
-      load( 'plugins/typescript.mjs' ).then( ( m ) => m.default ),
-      load( 'plugins/babel.mjs' ).then( ( m ) => m.default ),
-      load( 'plugins/postcss.mjs' ).then( ( m ) => m.default ),
-    ] );
-
-    setTimeout( close, 500 );
+    [ format, ...plugins ] = await Promise.all([
+      load('standalone.mjs').then((m) => m.default.format),
+      load('plugins/estree.mjs').then((m) => m.default),
+      load('plugins/html.mjs').then((m) => m.default),
+      load('plugins/typescript.mjs').then((m) => m.default),
+      load('plugins/babel.mjs').then((m) => m.default),
+      load('plugins/postcss.mjs').then((m) => m.default),
+    ]);
   }
 
   let parser: BuiltInParserName | undefined;
 
-  for ( const ext of Object.keys( parsers ) ) {
-    if ( name.endsWith( `.${ ext }` ) ) {
+  for (const ext of Object.keys(parsers)) {
+    if (name.endsWith(`.${ ext }`)) {
       parser = parsers[ ext ];
       break;
     }
   }
 
-  if ( !parser ) return code;
+  if (!parser) return code;
 
-  return format!( code, {
+  return format!(code, {
     parser,
     plugins,
     semi: true,
@@ -60,5 +58,5 @@ export async function prettierCode( name: string, code: string ) {
     tabWidth: 2,
     useTabs: false,
     vueIndentScriptAndStyle: false,
-  } );
+  });
 }

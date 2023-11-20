@@ -1,12 +1,13 @@
 <template>
   <div class="play-container column no-wrap">
-    <top-bar :store="store" :versions="versions" />
+    <top-bar :store="repl" />
 
-    <repl
+    <repl-component
+      v-if="repl.compiling.value !== true"
       class="col"
       :theme="$q.dark.isActive ? 'dark' : 'light'"
       :editor="(editor as any)"
-      :store="store"
+      :store="repl.replStore"
       :ssr="ssr"
       :sfc-options="sfcOptions"
       :preview-options="previewOptions"
@@ -20,10 +21,10 @@
 import { watchEffect, shallowRef } from 'vue';
 import merge from 'deepmerge';
 
-import { Repl } from '@vue/repl';
+import { Repl as ReplComponent } from '@vue/repl';
 import TopBar from './components/TopBar.vue';
 
-import { useReplStore } from './store';
+import { useRepl } from './store';
 import { prettierCode } from './utils/format';
 
 function parseVersions() {
@@ -44,18 +45,18 @@ async function handleKeyDown(event: KeyboardEvent) {
     event.preventDefault();
   } else if ((ctrlKey || metaKey || altKey) && shiftKey && code === 'KeyF') {
     event.preventDefault();
-    const file = store.state.activeFile;
+    const file = repl.replStore.state.activeFile;
     file.code = await prettierCode(file.filename, file.code);
   }
 }
 
-const urlSearch = new URLSearchParams( location.search );
+const urlSearch = new URLSearchParams(location.search);
 
-const editor = shallowRef( {} );
-const editorName = (urlSearch.get( 'editor' ) || 'monaco').toLowerCase();
-import( editorName.includes( 'mir' ) ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor' ).then( ( component ) => {
+const editor = shallowRef({});
+const editorName = (urlSearch.get('editor') || 'monaco').toLowerCase();
+import(editorName.includes('mir') ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((component) => {
   editor.value = component.default;
-} );
+});
 
 // enable experimental features
 let sfcOptions = {
@@ -65,11 +66,11 @@ let sfcOptions = {
   },
 };
 try {
-  const obj = JSON.parse( urlSearch.get( 'sfcOptions' ) || urlSearch.get( 'sfc-options' ) || 'null' );
-  if ( obj === Object( obj ) ) {
-    sfcOptions = merge( sfcOptions, obj );
+  const obj = JSON.parse(urlSearch.get('sfcOptions') || urlSearch.get('sfc-options') || 'null');
+  if (obj === Object(obj)) {
+    sfcOptions = merge(sfcOptions, obj);
   }
-} catch ( e ) {
+} catch (e) {
   // caught
 }
 
@@ -77,31 +78,37 @@ let previewOptions = {
   headHTML: [
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons">',
   ].join('\n'),
+
+  customCode: {
+    importCode: `const boot = __modules__["src/boot.ts"].default`,
+    useCode: `boot({ app })`,
+  },
 };
 try {
-  const obj = JSON.parse( urlSearch.get( 'previewOptions' ) || urlSearch.get( 'preview-options' ) || 'null' );
-  if ( obj === Object( obj ) ) {
-    previewOptions = merge( previewOptions, obj );
+  const obj = JSON.parse(urlSearch.get('previewOptions') || urlSearch.get('preview-options') || 'null');
+  if (obj === Object(obj)) {
+    previewOptions = merge(previewOptions, obj);
   }
-} catch ( e ) {
+} catch (e) {
   // caught
 }
 
 const versions = parseVersions();
 
-const store = useReplStore({
-  serializedState: location.hash.slice( 1 ),
+const repl = useRepl({
+  serializedState: location.hash.slice(1),
+  showOutput: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()),
+  outputMode: (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase(),
+  productionMode: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('prod')).toLowerCase()),
   versions,
-  showOutput: [ '', 'true', 't', '1' ].includes( String( urlSearch.get( 'preview' ) ).toLowerCase() ),
-  outputMode: ( urlSearch.get( 'previewMode' ) || urlSearch.get( 'preview-mode' ) || 'preview' ).toLowerCase(),
 });
 
-const { ssr } = store;
+const { ssr } = repl;
 
 // persist state
-watchEffect(() => history.replaceState({}, '', store.serialize()));
+watchEffect(() => history.replaceState({}, '', repl.replStore.serialize()));
 
-await store.init();
+await repl.replLoadPromise;
 </script>
 
 <style lang="sass">

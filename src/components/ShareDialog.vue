@@ -42,12 +42,12 @@
 </template>
 
 <script lang="ts">
-const canShare = ref<boolean | null>( null );
-const settings = reactive( {
+const canShare = ref<boolean | null>(null);
+const settings = reactive({
   preview: 'output',
   previewMode: 'preview',
   editor: 'mirror',
-} );
+});
 
 const previewOptions = [
   { value: 'code', label: locale.shareOptions.code },
@@ -68,28 +68,28 @@ const editorOptions = [
 </script>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onBeforeMount } from 'vue';
 import { useDialogPluginComponent, copyToClipboard, Notify } from 'quasar';
 import { locale } from '../utils/locale';
 
-onMounted( () => {
-  if ( canShare.value === null ) {
+onBeforeMount(() => {
+  if (canShare.value === null) {
     try {
-      canShare.value = navigator.canShare( {
+      canShare.value = navigator.canShare({
         title: 'Test',
         url: window.location.href,
-      } );
-    } catch ( err ) {
+      });
+    } catch (err) {
       canShare.value = false;
     }
   }
 
-  const urlSearch = new URLSearchParams( location.search );
-  const editorName = ( urlSearch.get( 'editor' ) || 'monaco' ).toLowerCase();
-  settings.preview = [ '', 'true', 't', '1' ].includes( String( urlSearch.get( 'preview' ) ).toLowerCase() ) ? 'output' : 'code';
-  settings.previewMode = ( urlSearch.get( 'previewMode' ) || urlSearch.get( 'preview-mode' ) || 'preview' ).toLowerCase();
-  settings.editor = editorName.includes( 'mir' ) ? 'mirror' : 'monaco';
-} );
+  const urlSearch = new URLSearchParams(location.search);
+  const editorName = (urlSearch.get('editor') || 'monaco').toLowerCase();
+  settings.preview = [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()) ? 'output' : 'code';
+  settings.previewMode = (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase();
+  settings.editor = editorName.includes('mir') ? 'mirror' : 'monaco';
+});
 
 defineEmits([
   ...useDialogPluginComponent.emits,
@@ -98,41 +98,41 @@ defineEmits([
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
 
 function getUrl() {
-  const url = new URL( location.href );
+  const url = new URL(location.href);
 
-  url.searchParams.delete( 'preview' );
-  url.searchParams.delete( 'previewMode' );
-  url.searchParams.delete( 'preview-mode' );
-  url.searchParams.delete( 'editor' );
+  url.searchParams.delete('preview');
+  url.searchParams.delete('previewMode');
+  url.searchParams.delete('preview-mode');
+  url.searchParams.delete('editor');
 
-  if ( settings.preview === 'output' ) {
-    url.searchParams.set( 'preview', 't' );
-    url.searchParams.set( 'previewMode', settings.previewMode );
+  if (settings.preview === 'output') {
+    url.searchParams.set('preview', 't');
+    url.searchParams.set('previewMode', settings.previewMode);
   }
 
-  url.searchParams.set( 'editor', settings.editor );
+  url.searchParams.set('editor', settings.editor);
 
-  return String( url );
+  return String(url);
 }
 
 async function onShare() {
   const url = getUrl();
 
-  if ( canShare.value ) {
+  if (canShare.value) {
     try {
-      await navigator.share( { title: 'Quasar Play Project', url } );
+      await navigator.share({ title: 'Quasar Play Project', url });
     } catch (err) {
       canShare.value = false;
-      await copyToClipboard( url );
+      await copyToClipboard(url);
     }
   } else {
-    await copyToClipboard( url );
+    await copyToClipboard(url);
   }
 
   Notify.create({
     type: 'positive',
     message: locale.doneShare,
-  } );
+  });
 
   onDialogHide();
 }

@@ -14,7 +14,7 @@
     />
 
     <div v-if="$q.screen.gt.md" class="text-caption text-grey-7 q-ml-sm q-mr-md">
-      <div v-for="ver in libVersions" :key="ver" style="line-height: 1.3">{{ ver }}</div>
+      <div v-for="ver in playVersions" :key="ver" style="line-height: 1.3">{{ ver }}</div>
     </div>
 
     <q-btn
@@ -35,19 +35,19 @@
       class="col"
     >
       <div v-if="$q.screen.lt.lg" class="row justify-between text-caption text-grey-7">
-        <div v-for="ver in libVersions" :key="ver">{{ ver }}</div>
+        <div v-for="ver in playVersions" :key="ver">{{ ver }}</div>
       </div>
 
       <q-select
-        v-for="(meta, pkg) in repoMeta"
+        v-for="(meta, pkg) in repoOptions"
         :key="pkg"
         outlined
         dense
         :model-value="meta.active"
         :options="meta.versions"
         popup-content-class="q-select__options-list"
-        @filter="(_, doneFn) => initRepoVersions(meta, doneFn)"
-        @update:model-value="changeVersion(pkg, $event)"
+        @filter="(_, doneFn) => initRepoOptions(meta, doneFn)"
+        @update:model-value="onChangeVersion(pkg, $event)"
       >
         <template #prepend>
           <div class="text-body1">{{ meta.name }}</div>
@@ -79,7 +79,7 @@
             :label="productionMode === true ? 'PROD' : 'DEV'"
             :aria-label="productionMode === true ? locale.prod.on : locale.prod.off"
             :title="productionMode === true ? locale.prod.on : locale.prod.off"
-            @click="toggleProductionMode"
+            @click="productionMode = productionMode !== true"
           />
 
           <q-btn
@@ -90,7 +90,7 @@
             :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
             :aria-label="ssr === true ? locale.ssr.on : locale.ssr.off"
             :title="ssr === true ? locale.ssr.on : locale.ssr.off"
-            @click="toggleSSR"
+            @click="ssr = ssr !== true"
           />
         </q-btn-group>
 
@@ -104,7 +104,7 @@
           :icon="symOutlinedDeleteForever"
           :aria-label="locale.reset"
           :title="locale.reset"
-          @click="reset"
+          @click="onReset"
         />
       </div>
 
@@ -128,7 +128,7 @@
         :icon="symOutlinedShare"
         :aria-label="locale.share"
         :title="locale.share"
-        @click="copyLink"
+        @click="onShare"
       />
 
       <q-btn
@@ -138,7 +138,7 @@
         :icon="symOutlinedDownload"
         :aria-label="locale.download"
         :title="locale.download"
-        @click="download"
+        @click="onDownload"
       />
 
       <q-btn
@@ -148,7 +148,7 @@
         :icon="symOutlinedFormatAlignLeft"
         :aria-label="locale.format"
         :title="locale.format"
-        @click="formatCodes"
+        @click="onFormatFiles"
       />
 
       <q-btn
@@ -158,7 +158,7 @@
         :icon="$q.dark.isActive === true ? symOutlinedDarkMode : symOutlinedLightMode"
         :aria-label="$q.dark.isActive === true ? locale.theme.dark : locale.theme.light"
         :title="$q.dark.isActive === true ? locale.theme.dark : locale.theme.light"
-        @click="toggleDark"
+        @click="$q.dark.set($q.dark.isActive !== true)"
       />
 
       <q-btn
@@ -176,9 +176,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
-import type { PropType } from 'vue';
-import { useQuasar, Dialog } from 'quasar';
+import {
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+  reactive,
+  type PropType,
+} from 'vue';
+import { Dialog } from 'quasar';
 
 import {
   symOutlinedTune,
@@ -198,60 +203,57 @@ import LogoLight from '../assets/logo-light.svg?url';
 
 import ShareDialog from './ShareDialog.vue';
 
-import { cdnTemplates, cdn, setCdn } from '../utils/cdn';
+import {
+  cdnTemplates,
+  cdn,
+  setCdn,
+} from '../utils/cdn';
 import { locale } from '../utils/locale';
 import { downloadProject } from '../download/download';
 import { prettierCode } from '../utils/format';
-import type { ReplStore } from '../store';
-
-const $q = useQuasar();
-
-const overlayVisible = ref(false);
+import type { ReplStoreType } from '../store';
 
 const props = defineProps({
   store: {
-    type: Object as PropType<ReplStore>,
+    type: Object as PropType<ReplStoreType>,
     required: true,
-  },
-
-  versions: {
-    type: Object as PropType<Record<string, string>>,
-    default: () => ({}),
   },
 });
 
-interface RepoMeta {
+const overlayVisible = ref(false);
+
+type RepoMetaType = {
   owner: string,
   repo: string,
   name: string,
   versions: string[],
   active: string,
   loaded: boolean,
-}
+};
 
-const repoMeta: Record<string, RepoMeta> = reactive({
+const repoOptions: Record<string, RepoMetaType> = reactive({
   quasar: {
     owner: 'quasarframework',
     repo: 'quasar',
     name: 'Quasar',
-    versions: [props.versions['quasar'] || __VERSION__],
-    active: props.versions['quasar'] || __VERSION__,
+    versions: [props.store.versions['quasar'] || __QUASAR_VERSION__],
+    active: props.store.versions['quasar'] || __QUASAR_VERSION__,
     loaded: false,
   },
   vue: {
     owner: 'vuejs',
     repo: 'core',
     name: 'Vue',
-    versions: [props.versions.vue || __VUE_VERSION__],
-    active: props.versions.vue || __VUE_VERSION__,
+    versions: [props.store.versions.vue || __VUE_VERSION__],
+    active: props.store.versions.vue || __VUE_VERSION__,
     loaded: false,
   },
   typescript: {
     owner: 'microsoft',
     repo: 'TypeScript',
     name: 'TypeScript',
-    versions: [props.versions.typescript || __TS_VERSION__],
-    active: props.versions.typescript || __TS_VERSION__,
+    versions: [props.store.versions.typescript || __TS_VERSION__],
+    active: props.store.versions.typescript || __TS_VERSION__,
     loaded: false,
   },
 });
@@ -267,10 +269,12 @@ async function fetchVersions(owner: string, repo: string, maxCount = 30) {
     .slice(0, maxCount);
 }
 
-async function initRepoVersions(meta: RepoMeta, doneFn: (callBackFn: () => void) => void) {
-  const versions = meta.loaded !== true
-    ? await fetchVersions(meta.owner, meta.repo)
-    : meta.versions;
+async function initRepoOptions(meta: RepoMetaType, doneFn: (callBackFn: () => void) => void) {
+  if (meta.loaded === true) {
+    doneFn(() => {});
+  }
+
+  const versions = await fetchVersions(meta.owner, meta.repo);
 
   doneFn(() => {
     if (meta.loaded !== true) {
@@ -280,17 +284,7 @@ async function initRepoVersions(meta: RepoMeta, doneFn: (callBackFn: () => void)
   });
 }
 
-const libVersions = [`play@${ __PLAY_VERSION__ }`,`repl@${ __REPL_VERSION__ }`];
-
-const versionsMap = computed(() => {
-  const map: Record<string, string> = {};
-
-  for (const pkg of Object.keys(repoMeta)) {
-    map[pkg] = repoMeta[pkg].active;
-  }
-
-  return map;
-});
+const playVersions = [`play@${ __PLAY_VERSION__ }`,`repl@${ __REPL_VERSION__ }`];
 
 const cdnOptions = Object.keys(cdnTemplates);
 
@@ -300,32 +294,21 @@ function handleWindowBlur() {
   }
 }
 
-onMounted(() => {
+onBeforeMount(() => {
   window.addEventListener('blur', handleWindowBlur);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   window.removeEventListener('blur', handleWindowBlur);
 });
 
 const { ssr, productionMode } = props.store;
-function toggleSSR() {
-  ssr.value = ssr.value !== true;
+
+function onShare() {
+  Dialog.create({ component: ShareDialog });
 }
 
-function toggleProductionMode() {
-  productionMode.value = productionMode.value !== true;
-}
-
-function toggleDark() {
-  $q.dark.set($q.dark.isActive !== true);
-}
-
-function copyLink() {
-  Dialog.create( { component: ShareDialog } );
-}
-
-function download() {
+function onDownload() {
   Dialog.create({
     title: locale.download,
     message: locale.doDownload,
@@ -343,7 +326,7 @@ function download() {
   }).onOk(() => downloadProject(props.store));
 }
 
-function reset() {
+function onReset() {
   Dialog.create({
     title: locale.reset,
     message: locale.doReset,
@@ -359,29 +342,29 @@ function reset() {
     },
     focus: 'cancel',
   }).onOk(() => {
-    location.href = `${ location.origin }${ location.pathname }`;
+    const url = new URL(location.href);
+    url.hash = '';
+    location.href = String(url);
   });
 }
 
-function buildSearch() {
-  if (Object.keys(versionsMap.value).length > 0) {
-    return `?${ Object.entries(versionsMap.value)
-      .map(([key, value]) => `${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`)
-      .join('&') }`;
+function onChangeVersion(pkg: string, version: string) {
+  const versionsMap: Record<string, string> = {};
+  const url = new URL(location.href);
+
+  repoOptions[ pkg ].active = version;
+
+  for (const key of Object.keys(repoOptions)) {
+    versionsMap[ key ] = repoOptions[ key ].active;
+    url.searchParams.set(key, versionsMap[ key ]);
   }
 
-  return '';
+  props.store.setVersions(versionsMap);
+  history.replaceState({}, '', String(url));
 }
 
-function changeVersion(pkg: string, version: string) {
-  repoMeta[pkg].active = version;
-
-  props.store.setVersions(versionsMap.value);
-  history.replaceState({}, '', `${ buildSearch() }${ location.hash }`);
-}
-
-async function formatCodes() {
-  const files = props.store.state.files;
+async function onFormatFiles() {
+  const files = props.store.replStore.state.files;
 
   for (const file of Object.values(files)) {
     if (!file.hidden) {

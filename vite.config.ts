@@ -8,25 +8,25 @@ import autoprefixer from 'autoprefixer';
 import { VitePWA } from 'vite-plugin-pwa';
 import MkCert from 'vite-plugin-mkcert';
 
-const playPkg = JSON.parse( readFileSync( resolve( __dirname, 'package.json' ), 'utf-8' ) );
-const quasarPkg = JSON.parse( readFileSync( resolve( __dirname, 'node_modules/quasar/package.json' ), 'utf-8' ) );
-const getVersion = ( name: string ) => {
+const playPkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
+const quasarPkg = JSON.parse(readFileSync(resolve(__dirname, 'node_modules/quasar/package.json'), 'utf-8'));
+const getVersion = (name: string) => {
   const [ dep ] = [ playPkg, quasarPkg ]
-    .map( ( p ) => ( p.dependencies && p.dependencies[ name ] ) || ( p.devDependencies && p.devDependencies[ name ] ) )
-    .filter( Boolean );
+    .map((p) => (p.dependencies && p.dependencies[ name ]) || (p.devDependencies && p.devDependencies[ name ]))
+    .filter(Boolean);
 
-  return dep && ( /^\d/.test( dep ) ? dep : dep.slice( 1 ) );
+  return dep && (/^\d/.test(dep) ? dep : dep.slice(1));
 };
 
-export default defineConfig( () => ( {
+export default defineConfig(() => ({
   base: '/quasar-play/',
   define: {
-    __VERSION__: JSON.stringify( quasarPkg.version ),
-    __VUE_VERSION__: JSON.stringify( getVersion( 'vue' ) ),
-    __TS_VERSION__: JSON.stringify( getVersion( 'typescript' ) ),
-    __PLAY_VERSION__: JSON.stringify( playPkg.version ),
-    __REPL_VERSION__: JSON.stringify( getVersion( '@vue/repl' ) ),
-    __VUE_PROD_DEVTOOLS__: JSON.stringify( true ),
+    __QUASAR_VERSION__: JSON.stringify(quasarPkg.version),
+    __VUE_VERSION__: JSON.stringify(getVersion('vue')),
+    __TS_VERSION__: JSON.stringify(getVersion('typescript')),
+    __PLAY_VERSION__: JSON.stringify(playPkg.version),
+    __REPL_VERSION__: JSON.stringify(getVersion('@vue/repl')),
+    __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
   },
 
   resolve: {
@@ -48,7 +48,7 @@ export default defineConfig( () => ( {
 
   optimizeDeps: {
     force: true,
-    exclude: [ '@vue/repl', 'vue/server-renderer', 'quasar' ],
+    exclude: [ '@vue/repl', 'vue/server-renderer' ],
   },
 
   preview: {
@@ -62,20 +62,20 @@ export default defineConfig( () => ( {
   },
 
   plugins: [
-    vue( {
+    vue({
       template: { transformAssetUrls },
-    } ),
+    }),
 
-    quasar( {
+    quasar({
       sassVariables: 'src/styles/variables.sass',
-    } ),
+    }),
 
-    VitePWA( {
+    VitePWA({
       registerType: 'autoUpdate',
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
-    } ),
+    }),
 
     MkCert(),
 
@@ -90,8 +90,8 @@ export default defineConfig( () => ( {
           { 'http-equiv': 'Cache-control', content: 'no-store,no-cache,must-revalidate' },
         ];
 
-        return metaAttrs.map( ( attrs ) => ( { tag: 'meta', attrs } ) );
+        return metaAttrs.map((attrs) => ({ tag: 'meta', attrs }));
       },
     },
   ],
-} ) );
+}));

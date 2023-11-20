@@ -1,288 +1,127 @@
-import { computed, reactive, ref, shallowRef, watch, watchEffect } from 'vue';
-import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate';
-import { File, compileFile } from '@vue/repl';
+import { reactive, ref, watch } from 'vue';
+import { ReplStore, File } from '@vue/repl';
 import { Dialog } from 'quasar';
 
 import { getCdnUrl } from './utils/cdn';
 import { locale } from './utils/locale';
 
-import mainCode from './templates/main.ts?raw';
-import bootCode from './templates/boot.ts?raw';
-import appCode from './templates/App.vue?raw';
-import counterCode from './templates/counter.ts?raw';
-import settingsCode from './templates/QuasarSettings.vue?raw';
-import tsconfigCode from './templates/tsconfig.json?raw';
+import type { StoreOptions } from '@vue/repl';
 
-import type { Store, StoreOptions, StoreState } from '@vue/repl';
+const MAIN_FILE = 'src/main.vue';
+const MAIN_CODE = await import('./templates/main.vue?raw').then((o) => o.default);
+const APP_FILE = 'src/App.vue';
 
-type ReplOptions = Omit<StoreOptions, 'defaultVueRuntimeURL' | 'defaultVueServerRendererURL'> & {
+const importMaps = {
+  quasar: [ 'quasar', 'dist/quasar.esm.prod.js' ],
+  '@vue/devtools-api': [ '@vue/devtools-api', 'lib/esm/index.js' ],
+  '@intlify/shared': [ '@intlify/shared', 'dist/shared.esm-bundler.js' ],
+  '@intlify/core-base': [ '@intlify/core-base', 'dist/core-base.esm-bundler.js' ],
+  '@intlify/message-compiler': [ '@intlify/message-compiler', 'dist/message-compiler.esm-bundler.js' ],
+  'source-map-js': [ 'source-map-js', 'source-map.js' ],
+  'vue-i18n': [ 'vue-i18n', 'dist/vue-i18n.esm-bundler.js' ],
+  pinia: [ 'pinia', 'dist/pinia.esm-browser.js' ],
+  'vue-demi': [ 'vue-demi', 'lib/index.mjs' ],
+  'vue-router': [ 'vue-router', 'dist/vue-router.esm-bundler.js' ],
+
+  '@quasar/extras/roboto-font/roboto-font.css': [ '@quasar/extras', 'roboto-font/roboto-font.css' ],
+  '@quasar/extras/material-icons/material-icons.css': [ '@quasar/extras', 'material-icons/material-icons.css' ],
+} as Record<string, [ string, string ]>;
+
+function buildImports(versions: Record<string, string> = {}) {
+  const imports: Record<string, string> = {};
+
+  for (const name of Object.keys(importMaps)) {
+    const [ pkg, path ] = importMaps[ name ];
+
+    imports[ name ] = getCdnUrl(pkg, path, versions[ pkg ] || 'latest');
+  }
+
+  return { imports };
+}
+
+const templateFiles = [
+  { name: MAIN_FILE, code: MAIN_CODE, internal: true },
+  { name: 'src/QuasarSettings.vue', code: await import('./templates/QuasarSettings.vue?raw').then((o) => o.default), internal: true },
+  { name: 'src/boot.ts', code: await import('./templates/boot.ts?raw').then((o) => o.default) },
+  { name: APP_FILE, code: await import('./templates/App.vue?raw').then((o) => o.default) },
+  { name: 'src/counter.ts', code: await import('./templates/counter.ts?raw').then((o) => o.default) },
+  { name: 'tsconfig.json', code: await import('./templates/tsconfig.json?raw').then((o) => o.default) },
+];
+
+
+type ReplOptionsType = StoreOptions & {
   versions?: Record<string, string>;
 };
 
-type CompilerType = typeof import( 'vue/compiler-sfc' );
-
-interface PathMeta {
-  pkg: string,
-  path: string;
-}
-
-interface ImportMap {
-  imports?: Record<string, string>,
-  scopes?: Record<string, string>;
-}
-
-// repl internal files
-const IMPORT_MAP = 'import-map.json';
-const TSCONFIG = 'tsconfig.json';
-
-const mainFile = 'src/main.ts';
-const bootFile = 'src/boot.ts';
-const appFile = 'src/App.vue';
-const counterFile = 'src/counter.ts';
-const settingsFile = 'src/QuasarSettings.vue';
-
-const pkgPathMap: Record<string, string | PathMeta> = {
-  vue: 'dist/vue.{{production}}esm-browser.js',
-  'vue/server-renderer': {
-    pkg: '@vue/server-renderer',
-    path: 'dist/server-renderer.esm-browser.js',
-  },
-  quasar: 'dist/quasar.esm.prod.js',
-  '@quasar/extras/roboto-font/roboto-font.css': {
-    pkg: '@quasar/extras',
-    path: 'roboto-font/roboto-font.css',
-  },
-  '@quasar/extras/material-icons/material-icons.css': {
-    pkg: '@quasar/extras',
-    path: 'material-icons/material-icons.css',
-  },
-};
-
-const internalFiles: Record<string, string> = {
-  [ settingsFile ]: settingsCode,
-};
-
-function utoa( data: string ): string {
-  const buffer = strToU8( data );
-  const zipped = zlibSync( buffer, { level: 9 } );
-  const binary = strFromU8( zipped, true );
-
-  return btoa( binary );
-}
-
-function atou( base64: string ): string {
-  const binary = atob( base64 );
-
-  // zlib header (x78), level 9 (xDA)
-  if ( binary.startsWith( '\x78\xDA' ) ) {
-    const buffer = strToU8( binary, true );
-    const unzipped = unzlibSync( buffer );
-
-    return strFromU8( unzipped );
-  }
-
-  // old unicode hacks for backward compatibility
-  // https://base64.guru/developers/javascript/examples/unicode-strings
-  return decodeURIComponent( escape( binary ) );
-}
-
-export function useReplStore( options: ReplOptions = {} ) {
+export function useRepl(options: ReplOptionsType = {}) {
   options = {
-    serializedState: '',
     showOutput: false,
     outputMode: 'preview',
-    versions: {},
+    productionMode: false,
     ...options,
+    serializedState: typeof options.serializedState === 'string' && options.serializedState.trim().length > 0
+      ? options.serializedState
+      : '',
+    versions: {
+      vue: __VUE_VERSION__,
+      typescript: __TS_VERSION__,
+      quasar: __QUASAR_VERSION__,
+      ...options.versions,
+    },
   };
 
-  const versions = reactive( { ...options.versions } );
-  const compiler = shallowRef<CompilerType>();
+  const versions = reactive({ ...options.versions });
+  const ssr = ref(false);
+  const productionMode = ref(false);
+  const compiling = ref(true);
+  let replLoadPromise = Promise.resolve();
 
-  const files: StoreState[ 'files' ] = {};
+  const replStore = new ReplStore(options);
+  replStore.state.mainFile = MAIN_FILE;
 
-  if ( options.serializedState ) {
-    const saved = JSON.parse( atou( options.serializedState ) );
-
-    for ( const name of Object.keys( saved ) ) {
-      const filename = normalizeFilename( name );
-
-      files[ filename ] = new File( filename, saved[ name ] );
+  const addAllFiles = options.serializedState!.length === 0;
+  templateFiles.forEach((file) => {
+    if (addAllFiles === true || file.internal === true) {
+      replStore.addFile(new File(file.name, file.code, file.internal === true));
     }
-  } else {
-    files[ bootFile ] = new File( bootFile, bootCode );
-    files[ appFile ] = new File( appFile, appCode );
-    files[ counterFile ] = new File( counterFile, counterCode );
-  }
+  });
+  replStore.setActive(APP_FILE);
+  replStore.state.mainFile = MAIN_FILE;
 
-  for ( const name of Object.keys( internalFiles ) ) {
-    const filename = normalizeFilename( name );
+  watch(() => versions.typescript, () => {
+    replStore.setTypeScriptVersion(versions.typescript);
+  }, { immediate: true });
 
-    files[ filename ] = new File( filename, internalFiles[ name ], true );
-  }
+  watch(() => String([ versions.quasar, versions.vue ]), () => {
+    compiling.value = true;
+    const { activeFile } = replStore.state;
+    replStore.setImportMap(buildImports(versions));
+    replStore.addFile(new File(
+      MAIN_FILE,
+      MAIN_CODE.replace('__QUASAR_UI_STYLE__', getCdnUrl('quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ])),
+      true,
+    ));
+    replStore.state.mainFile = MAIN_FILE;
+    replLoadPromise = replStore.setVueVersion(versions.vue)
+      .then(() => {
+        setTimeout(() => {
+          compiling.value = false;
+        }, 300);
+      });
 
-  if ( !files[ IMPORT_MAP ] ) {
-    files[ IMPORT_MAP ] = new File(
-      IMPORT_MAP,
-      JSON.stringify( {
-        imports: {
-          '@vue/devtools-api': 'https://unpkg.com/@vue/devtools-api@latest/lib/esm/index.js',
-          '@intlify/shared': 'https://unpkg.com/@intlify/shared@latest/dist/shared.esm-bundler.js',
-          '@intlify/core-base': 'https://unpkg.com/@intlify/core-base@latest/dist/core-base.esm-bundler.js',
-          '@intlify/message-compiler': 'https://unpkg.com/@intlify/message-compiler@latest/dist/message-compiler.esm-bundler.js',
-          'source-map-js': 'https://unpkg.com/source-map-js/source-map.js',
-          'vue-i18n': 'https://unpkg.com/vue-i18n@latest/dist/vue-i18n.esm-bundler.js',
-          pinia: 'https://unpkg.com/pinia@latest/dist/pinia.esm-browser.js',
-          'vue-demi': 'https://unpkg.com/vue-demi@latest/lib/index.mjs',
-          'vue-router': 'https://unpkg.com/vue-router@latest/dist/vue-router.esm-bundler.js',
-        },
-      }, undefined, 2 ) + '\n' );
-  }
+    replStore.setActive(activeFile.filename);
+  }, { immediate: true });
 
-  if ( !files[ TSCONFIG ] ) {
-    files[ TSCONFIG ] = new File( TSCONFIG, tsconfigCode );
-  }
-
-  const state: StoreState = reactive( {
-    mainFile,
-    files,
-    activeFile: files[ appFile ],
-    errors: [],
-    resetFlip: false,
-    vueRuntimeURL: '',
-    vueServerRendererURL: '',
-    typescriptLocale: undefined,
-    typescriptVersion: computed( () => versions.typescript || 'latest' ),
-  } );
-
-  const productionMode = ref( false );
-
-  const customImports = computed( () => {
-    const code = state.files[ IMPORT_MAP ]?.code.trim();
-    let map: ImportMap = {};
-
-    if ( !code ) return map;
-
-    try {
-      map = JSON.parse( code );
-    } catch ( e ) {
-      console.error( e );
+  watch(productionMode, () => {
+    if (replStore.productionMode !== productionMode.value) {
+      replStore.toggleProduction();
     }
+  }, { immediate: true });
 
-    return map;
-  } );
-  const internalImports = computed( () => buildImports( versions, productionMode.value ) );
-  const importMap = computed( () => {
-    return <ImportMap>{
-      imports: {
-        ...internalImports.value,
-        ...( customImports.value.imports || {} ),
-      },
-      scopes: customImports.value.scopes,
-    };
-  } );
-
-  const store: Store = reactive( {
-    state,
-    compiler: compiler as unknown as CompilerType,
-    initialShowOutput: !!options.showOutput,
-    initialOutputMode: ( options.outputMode || 'preview' ) as Store[ 'initialOutputMode' ],
-    init,
-    setActive,
-    addFile,
-    deleteFile,
-    renameFile,
-    getImportMap,
-    getTsConfig,
-    reloadLanguageTools: undefined,
-  } );
-
-  watch(
-    () => versions[ 'quasar' ],
-    () => {
-      state.files[ mainFile ] = new File(
-        mainFile,
-        mainCode.replace(
-          '__QUASAR_UI_STYLE__',
-          getCdnUrl( 'quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ] ),
-        ),
-        true,
-      );
-
-      compiler.value && compileFile( store, state.files[ mainFile ] );
-    },
-    { immediate: true, deep: true },
-  );
-
-  function normalizeFilename( origin: string ) {
-    if ( origin === IMPORT_MAP || origin === TSCONFIG || origin.startsWith( 'src/' ) ) {
-      return origin;
-    }
-
-    return `src/${ origin }`;
-  }
-
-  function buildImports( versions: Record<string, string> = {}, prod: boolean = false ) {
-    const imports: Record<string, string> = {};
-
-    for ( const name of Object.keys( pkgPathMap ) ) {
-      const meta = pkgPathMap[ name ];
-
-      let pkg = '';
-      let path = '';
-
-      if ( typeof meta === 'string' ) {
-        pkg = name;
-        path = meta;
-      } else {
-        pkg = meta.pkg;
-        path = meta.path;
-      }
-
-      if ( !pkg || !path ) continue;
-
-      const prodReplace = prod === true ? 'runtime.' : '';
-      imports[ name ] = getCdnUrl( pkg, path, versions[ pkg ] || 'latest' ).replace( '{{production}}', prodReplace );
-    }
-
-    return imports;
-  }
-
-  async function loadCompiler( version?: string ) {
-    const compilerUrl = getCdnUrl( '@vue/compiler-sfc', 'dist/compiler-sfc.esm-browser.js', version );
-    const runtimeDom = getCdnUrl( '@vue/runtime-dom', 'dist/runtime-dom.esm-browser.js', version );
-
-    compiler.value = await import(/* @vite-ignore */ compilerUrl );
-    state.vueRuntimeURL = runtimeDom;
-  }
-
-  async function init() {
-    if ( !compiler.value ) {
-      await loadCompiler();
-      watchEffect( () => compileFile( store, state.activeFile ) );
-    }
-
-    for ( const file of Object.values( state.files ) ) {
-      compileFile( store, file );
-    }
-  }
-
-  function setActive( filename: string ) {
-    if ( !internalFiles[ filename ] ) {
-      state.activeFile = state.files[ filename ];
-    }
-  }
-
-  function addFile( fileOrFilename: string | File ): void {
-    const file = typeof fileOrFilename === 'string' ? new File( fileOrFilename ) : fileOrFilename;
-    state.files[ file.filename ] = file;
-
-    if ( !file.hidden ) setActive( file.filename );
-  }
-
-  function deleteFile( filename: string ) {
-    Dialog.create( {
+  replStore.deleteFile = (filename: string) => {
+    Dialog.create({
       title: locale.del,
-      message: locale.doDelete.replace( '#{0}', filename ),
+      message: locale.doDelete.replace('#{0}', filename),
       ok: {
         flat: true,
         color: 'negative',
@@ -294,94 +133,29 @@ export function useReplStore( options: ReplOptions = {} ) {
         label: locale.cancel,
       },
       focus: 'cancel',
-    } ).onOk( () => {
-      if ( state.activeFile.filename === filename ) {
-        state.activeFile = state.files[ appFile ];
+    }).onOk(() => {
+      if (replStore.state.activeFile.filename === filename) {
+        replStore.state.activeFile = replStore.state.files[ replStore.state.mainFile ];
       }
+      delete replStore.state.files[ filename ];
+    });
+  };
 
-      delete state.files[ filename ];
-    } );
-  }
-
-  function renameFile( oldName: string, newName: string ) {
-    const file = state.files[ oldName ];
-
-    if (
-      !file ||
-      !newName ||
-      oldName === newName ||
-      file.hidden ||
-      [ appFile ].includes( file.filename )
-    ) {
-      return;
-    }
-
-    file.filename = newName;
-
-    const files = { ...state.files };
-
-    delete files[ oldName ];
-    files[ newName ] = file;
-    state.files = files;
-
-    compileFile( store, file );
-  }
-
-  function serialize() {
-    return '#' + utoa( JSON.stringify( getFiles() ) );
-  }
-
-  function getFiles() {
-    const exported: Record<string, string> = {};
-
-    for ( const filename of Object.keys( state.files ) ) {
-      if ( !internalFiles[ filename ] ) {
-        exported[ filename ] = state.files[ filename ].code;
-      }
-    }
-
-    return exported;
-  }
-
-  function getImportMap() {
-    return importMap.value;
-  }
-
-  function getDependencies() {
-    const imports = customImports.value.imports || {};
-    const reVer = /@(^\/)+/;
-
-    return Object.keys( imports ).map( ( name ) => {
-      const matchVer = reVer.exec( imports[ name ] );
-
-      return { name, version: ( matchVer !== null ? matchVer[ 1 ] : '' ) || 'latest' };
-    } );
-  }
-
-  function getTsConfig() {
-    try {
-      return JSON.parse( state.files[ TSCONFIG ].code );
-    } catch ( e ) {
-      return {};
-    }
-  }
-
-  async function setVersions( newVersions: Record<string, string> ) {
-    Object.assign( versions, newVersions );
-  }
 
   return {
-    ...store,
+    replStore,
 
-    ssr: ref( false ),
+    ssr,
     productionMode,
     versions,
-    init,
-    serialize,
-    getFiles,
-    getDependencies,
-    setVersions,
+
+    setVersions(newVersions: Record<string, string>) {
+      Object.assign(versions, newVersions);
+    },
+
+    compiling,
+    replLoadPromise,
   };
 }
 
-export type ReplStore = ReturnType<typeof useReplStore>;
+export type ReplStoreType = ReturnType<typeof useRepl>;
