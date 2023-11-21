@@ -50,7 +50,7 @@
         @update:model-value="onChangeVersion(pkg, $event)"
       >
         <template #prepend>
-          <div class="text-body1">{{ meta.name }}</div>
+          <div class="text-body2">{{ meta.name }}</div>
         </template>
       </q-select>
 
@@ -63,7 +63,22 @@
         @update:model-value="setCdn"
       >
         <template #prepend>
-          <div class="text-body1">{{ locale.cdn }}</div>
+          <div class="text-body2">{{ locale.cdn }}</div>
+        </template>
+      </q-select>
+
+      <q-select
+        outlined
+        dense
+        :model-value="editor"
+        :options="editorOptions"
+        map-options
+        emit-value
+        popup-content-class="q-select__options-list"
+        @update:model-value="onChangeEditor"
+      >
+        <template #prepend>
+          <div class="text-body2">{{ locale.editor.label }}</div>
         </template>
       </q-select>
 
@@ -219,7 +234,13 @@ const props = defineProps({
     type: Object as PropType<ReplStoreType>,
     required: true,
   },
+  editor: {
+    type: String,
+    required: true,
+  },
 });
+
+const emit = defineEmits([ 'update:editor' ]);
 
 const overlayVisible = ref(false);
 
@@ -288,6 +309,11 @@ async function initRepoOptions(meta: RepoMetaType, doneFn: (callBackFn: () => vo
 const playVersions = [`play@${ __PLAY_VERSION__ }`,`repl@${ __REPL_VERSION__ }`];
 
 const cdnOptions = Object.keys(cdnTemplates);
+
+const editorOptions = [
+  { value: 'codemirror', label: locale.editor.codemirror },
+  { value: 'monaco', label: locale.editor.monaco },
+];
 
 function handleWindowBlur() {
   if (document.activeElement?.tagName === 'IFRAME') {
@@ -361,6 +387,15 @@ function onChangeVersion(pkg: string, version: string) {
   }
 
   props.store.setVersions(versionsMap);
+  history.replaceState({}, '', String(url));
+}
+
+function onChangeEditor(editorName: string) {
+  emit('update:editor', editorName);
+
+  const url = new URL(location.href);
+  url.searchParams.set('editor', editorName);
+
   history.replaceState({}, '', String(url));
 }
 
@@ -450,6 +485,9 @@ body.desktop .q-select__options-list
 
     &--opened
       transform: translate3d(0, 0, -1px)
+
+    .q-select .q-field__native
+      justify-content: flex-end
 
 .play__quasar-logo
   img

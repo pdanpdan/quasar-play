@@ -21,7 +21,7 @@ const config = {
       editorMonaco: 'Use Monaco editor - full featured, bigger size',
       editorMirror: 'Use CodeMirror editor - smaller size',
     },
-    cdn: 'Change CDN',
+    cdn: 'CDN',
     other: 'Other',
     loading: 'Loading #{0}...',
     format: 'Format code',
@@ -36,6 +36,11 @@ const config = {
     prod: {
       on: 'Use DEV mode',
       off: 'Use PROD mode',
+    },
+    editor: {
+      label: 'Editor',
+      codemirror: 'CodeMirror',
+      monaco: 'Monaco',
     },
   },
 };
