@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
 const cdnStoreKey = 'quasar-play-prefer-cdn';
-export const cdn = ref( localStorage.getItem( cdnStoreKey ) || 'unpkg' );
+export const cdn = ref(localStorage.getItem(cdnStoreKey) || 'unpkg');
 
 export const cdnTemplates: Record<string, string> = {
   unpkg: 'https://unpkg.com/{pkg}@{version}/{path}',
@@ -9,13 +9,13 @@ export const cdnTemplates: Record<string, string> = {
   elemecdn: 'https://npm.elemecdn.com/{pkg}@{version}/{path}',
 };
 
-export function setCdn( name: string ) {
+export function setCdn(name: string) {
   cdn.value = name;
-  localStorage.setItem( cdnStoreKey, cdn.value );
+  localStorage.setItem(cdnStoreKey, cdn.value);
 }
 
-export function getCdnUrl( pkg: string, path: string, version = 'latest' ) {
+export function getCdnUrl(pkg: string, path: string, version = 'latest') {
   const template = cdnTemplates[ cdn.value ];
 
-  return template.replace( '{pkg}', pkg ).replace( '{version}', version ).replace( '{path}', path );
+  return template.replace('{pkg}', pkg).replace('{version}', version).replace('{path}', path);
 }

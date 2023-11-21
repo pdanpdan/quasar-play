@@ -6,10 +6,10 @@ import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 import 'quasar/dist/quasar.rtl.prod.css';
 
-( async function () {
-  const app = createApp( App );
+(async function () {
+  const app = createApp(App);
 
-  await Boot( { app } );
+  await Boot({ app });
 
-  app.mount( '#app' );
-} )();
+  app.mount('#app');
+})();

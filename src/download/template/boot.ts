@@ -2,9 +2,9 @@
 // will be replaced by the real file on download
 import type { App } from 'vue';
 
-export default function ( { app }: { app: App; } ) {
+export default function ({ app }: { app: App; }) {
   // function is awaited before continue
-  if ( app ) {
+  if (app) {
     // use app before mount
   }
 }

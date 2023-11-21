@@ -40,13 +40,13 @@ const config = {
   },
 };
 
-type Language = keyof typeof config;
+type LanguageType = keyof typeof config;
 
 let defaultLanguage = (
-  typeof navigator !== 'undefined' ? navigator.language.split( '-' )[ 0 ] : 'en'
-) as Language;
+  typeof navigator !== 'undefined' ? navigator.language.split('-')[ 0 ] : 'en'
+) as LanguageType;
 
-if ( !config[ defaultLanguage ] ) {
+if (!config[ defaultLanguage ]) {
   defaultLanguage = 'en';
 }
 

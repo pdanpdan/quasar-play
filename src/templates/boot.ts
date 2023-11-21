@@ -40,18 +40,18 @@ import { createRouter, createMemoryHistory } from 'vue-router';
 import { h } from 'vue';
 
 // function is awaited before continue
-export default function ( { app }: { app: App; } ) {
-  app.use( createPinia() );
+export default function ({ app }: { app: App; }) {
+  app.use(createPinia());
 
-  app.use( createRouter( {
+  app.use(createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', component: { render() { return h( 'div', [ 'Home' ] ); } } },
-      { path: '/about', component: { render() { return h( 'div', [ 'About' ] ); } } },
+      { path: '/', component: { render() { return h('div', [ 'Home' ]); } } },
+      { path: '/about', component: { render() { return h('div', [ 'About' ]); } } },
     ],
-  } ) );
+  }));
 
-  app.use( createI18n( {
+  app.use(createI18n({
     legacy: false,
     locale: 'jp',
     fallbackLocale: 'en',
@@ -67,9 +67,9 @@ export default function ( { app }: { app: App; } ) {
         },
       },
     },
-  } ) );
+  }));
 
-  app.use( Quasar, {
+  app.use(Quasar, {
     plugins: {
       // Notify,
       // Dialog,
@@ -78,5 +78,5 @@ export default function ( { app }: { app: App; } ) {
     config: {
       dark: 'auto',
     },
-  } );
+  });
 }

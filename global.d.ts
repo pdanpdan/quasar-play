@@ -1,4 +1,4 @@
-declare const __VERSION__: string;
+declare const __QUASAR_VERSION__: string;
 declare const __VUE_VERSION__: string;
 declare const __TS_VERSION__: string;
 declare const __PLAY_VERSION__: string;
