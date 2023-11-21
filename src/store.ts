@@ -1,5 +1,5 @@
 import { reactive, ref, watch } from 'vue';
-import { ReplStore, File } from '@vue/repl';
+import { ReplStore, File, compileFile } from '@vue/repl';
 import { Dialog } from 'quasar';
 
 import { getCdnUrl } from './utils/cdn';
@@ -27,8 +27,8 @@ const importMaps = {
   '@quasar/extras/material-icons/material-icons.css': [ '@quasar/extras', 'material-icons/material-icons.css' ],
 } as Record<string, [ string, string ]>;
 
-function buildImports(versions: Record<string, string> = {}) {
-  const imports: Record<string, string> = {};
+function buildImports(currentImportMap: Record<string, Record<string, string>>, versions: Record<string, string> = {}) {
+  const imports: Record<string, string> = currentImportMap.imports || {};
 
   for (const name of Object.keys(importMaps)) {
     const [ pkg, path ] = importMaps[ name ];
@@ -36,7 +36,10 @@ function buildImports(versions: Record<string, string> = {}) {
     imports[ name ] = getCdnUrl(pkg, path, versions[ pkg ] || 'latest');
   }
 
-  return { imports };
+  return {
+    ...currentImportMap,
+    imports,
+  };
 }
 
 const templateFiles = [
@@ -95,7 +98,7 @@ export function useRepl(options: ReplOptionsType = {}) {
   watch(() => String([ versions.quasar, versions.vue ]), () => {
     compiling.value = true;
     const { activeFile } = replStore.state;
-    replStore.setImportMap(buildImports(versions));
+    replStore.setImportMap(buildImports(replStore.getImportMap(), versions));
     replStore.addFile(new File(
       MAIN_FILE,
       MAIN_CODE.replace('__QUASAR_UI_STYLE__', getCdnUrl('quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ])),
@@ -103,10 +106,13 @@ export function useRepl(options: ReplOptionsType = {}) {
     ));
     replStore.state.mainFile = MAIN_FILE;
     replLoadPromise = replStore.setVueVersion(versions.vue)
+      .then(() => replStore.compiler)
+      .then(async () => {
+        await compileFile(replStore, replStore.state.activeFile);
+        await compileFile(replStore, replStore.state.files[ MAIN_FILE ]);
+      })
       .then(() => {
-        setTimeout(() => {
-          compiling.value = false;
-        }, 300);
+        compiling.value = false;
       });
 
     replStore.setActive(activeFile.filename);
