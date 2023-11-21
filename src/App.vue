@@ -65,6 +65,7 @@ const repl = await useRepl({
   outputMode: (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase(),
   productionMode: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('prod')).toLowerCase()),
   ssr: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('ssr')).toLowerCase()),
+  activeFile: String(urlSearch.get('file')),
   versions,
 });
 

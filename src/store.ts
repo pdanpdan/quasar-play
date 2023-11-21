@@ -29,7 +29,7 @@ const importMaps = {
 
   '@quasar/extras/roboto-font/roboto-font.css': [ '@quasar/extras', 'roboto-font/roboto-font.css' ],
   '@quasar/extras/material-icons/material-icons.css': [ '@quasar/extras', 'material-icons/material-icons.css' ],
-} as Record<string, [ string, string, string? ]>;
+} as Record<string, [ string, string, string?]>;
 
 function buildImports(currentImportMap: Record<string, Record<string, string>>, versions: Record<string, string> = {}) {
   const imports: Record<string, string> = currentImportMap.imports || {};
@@ -46,6 +46,18 @@ function buildImports(currentImportMap: Record<string, Record<string, string>>, 
   };
 }
 
+function patchTsConfig(code: string, versions: Record<string, string> = {}) {
+  try {
+    const tsConfig = JSON.parse(code);
+    const moduleResolution = parseInt(versions.typescript.split('.')[ 0 ], 10) < 5 ? 'Node' : 'Bundler';
+    tsConfig.compilerOptions.moduleResolution = moduleResolution;
+    return JSON.stringify(tsConfig, null, 2);
+  } catch (e) {
+    // caught
+  }
+  return code;
+}
+
 const templateFiles = [
   { name: 'src/boot.ts', code: BOOT_CODE },
   { name: APP_FILE, code: APP_CODE },
@@ -59,6 +71,7 @@ const templateFiles = [
 type ReplOptionsType = StoreOptions & {
   versions?: Record<string, string>;
   ssr?: boolean;
+  activeFile?: string;
 };
 
 export async function useRepl(options: ReplOptionsType = {}) {
@@ -84,6 +97,8 @@ export async function useRepl(options: ReplOptionsType = {}) {
   const quasarCSSUrl = computed(() => getCdnUrl('quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ]));
 
   const replStore = new ReplStore(options);
+  replStore.addFile(new File(TS_FILE, patchTsConfig(replStore.state.files[ TS_FILE ].code, versions)));
+  replStore.setTypeScriptVersion(versions.typescript);
   replStore.setVueVersion(versions.vue);
 
   const addAllFiles = options.serializedState!.length === 0;
@@ -105,10 +120,17 @@ export async function useRepl(options: ReplOptionsType = {}) {
   templateFiles.filter((file) => file.internal === true).forEach((file) => {
     replStore.state.files[ file.name ].hidden = true;
   });
-  replStore.setActive(APP_FILE);
+
+  const activeFile = typeof options.activeFile === 'string' && options.activeFile.trim().length > 0 ? options.activeFile.trim() : APP_FILE;
+  const fileNames = Object.keys(replStore.state.files);
+  replStore.setActive(fileNames.includes(activeFile) === true ? activeFile : APP_FILE);
 
   watch(() => versions.quasar, () => {
+    const { activeFile } = replStore.state;
     replStore.addFile(new File(IMPORT_FILE, JSON.stringify(buildImports(replStore.getImportMap(), versions), null, 2)));
+    if (activeFile) {
+      replStore.setActive(activeFile.filename);
+    }
   });
 
   watch(() => versions.vue, () => {
@@ -116,16 +138,13 @@ export async function useRepl(options: ReplOptionsType = {}) {
   });
 
   watch(() => versions.typescript, () => {
-    try {
-      const tsConfig = JSON.parse(TS_CODE);
-      const moduleResolution = parseInt(versions.typescript.split('.')[ 0 ], 10) < 5 ? 'Node' : 'Bundler';
-      tsConfig.compilerOptions.moduleResolution = moduleResolution;
-      replStore.addFile(new File(TS_FILE, JSON.stringify(tsConfig, null, 2)));
-    } catch (e) {
-      // caught
-    }
+    const { activeFile } = replStore.state;
+    replStore.addFile(new File(TS_FILE, patchTsConfig(replStore.state.files[ TS_FILE ].code, versions)));
     replStore.setTypeScriptVersion(versions.typescript);
-  }, { immediate: true });
+    if (activeFile) {
+      replStore.setActive(activeFile.filename);
+    }
+  });
 
   watch(productionMode, () => {
     if (replStore.productionMode !== productionMode.value) {
@@ -163,6 +182,7 @@ export async function useRepl(options: ReplOptionsType = {}) {
     productionMode,
     quasarCSSUrl,
     versions,
+    activeFile: computed(() => (replStore.state.activeFile.filename)),
 
     setVersions(newVersions: Record<string, string>) {
       Object.assign(versions, newVersions);
