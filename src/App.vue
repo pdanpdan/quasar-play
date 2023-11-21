@@ -1,6 +1,6 @@
 <template>
   <div class="play-container column no-wrap">
-    <top-bar :store="repl" />
+    <top-bar :store="repl" v-model:editor="editorName" />
 
     <repl-component
       class="col"
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect, shallowRef, computed } from 'vue';
+import { watchEffect, shallowRef, computed, ref, watch } from 'vue';
 import merge from 'deepmerge';
 
 import { Repl as ReplComponent } from '@vue/repl';
@@ -52,10 +52,12 @@ async function handleKeyDown(event: KeyboardEvent) {
 const urlSearch = new URLSearchParams(location.search);
 
 const editor = shallowRef({});
-const editorName = (urlSearch.get('editor') || 'monaco').toLowerCase();
-import(editorName.includes('mir') ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((component) => {
-  editor.value = component.default;
-});
+const editorName = ref((urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco');
+watch(editorName, () => {
+  import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((component) => {
+    editor.value = component.default;
+  });
+}, { immediate: true });
 
 const versions = parseVersions();
 
