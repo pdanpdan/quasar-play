@@ -7,29 +7,25 @@ Add imports as needed to `Import Map`
 Pinia:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@latest/lib/esm/index.js",
-    "pinia": "https://unpkg.com/pinia@latest/dist/pinia.esm-browser.js",
-    "vue-demi": "https://unpkg.com/vue-demi@latest/lib/index.mjs"
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "pinia": "https://unpkg.com/pinia/dist/pinia.esm-browser.js",
+    "vue-demi": "https://unpkg.com/vue-demi/lib/index.mjs"
   }
 }
 
 VueRouter:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@latest/lib/esm/index.js",
-    "vue-router": "https://unpkg.com/vue-router@latest/dist/vue-router.esm-bundler.js"
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "vue-router": "https://unpkg.com/vue-router/dist/vue-router.esm-browser.js"
   }
 }
 
 VueI18n:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@latest/lib/esm/index.js",
-    "@intlify/shared": "https://unpkg.com/@intlify/shared@latest/dist/shared.esm-bundler.js",
-    "@intlify/core-base": "https://unpkg.com/@intlify/core-base@latest/dist/core-base.esm-bundler.js",
-    "@intlify/message-compiler": "https://unpkg.com/@intlify/message-compiler@latest/dist/message-compiler.esm-bundler.js",
-    "source-map-js": "https://unpkg.com/source-map-js/source-map.js",
-    "vue-i18n": "https://unpkg.com/vue-i18n@latest/dist/vue-i18n.esm-bundler.js"
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "vue-i18n": "https://unpkg.com/vue-i18n/dist/vue-i18n.esm-browser.js"
   }
 }
 */
@@ -53,6 +49,7 @@ export default function ({ app }: { app: App; }) {
 
   app.use(createI18n({
     legacy: false,
+    // globalInjection: true,
     locale: 'jp',
     fallbackLocale: 'en',
     messages: {

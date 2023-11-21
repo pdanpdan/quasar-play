@@ -7,6 +7,7 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
 import autoprefixer from 'autoprefixer';
 import { VitePWA } from 'vite-plugin-pwa';
 import MkCert from 'vite-plugin-mkcert';
+import { compression } from 'vite-plugin-compression2';
 
 const playPkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
 const quasarPkg = JSON.parse(readFileSync(resolve(__dirname, 'node_modules/quasar/package.json'), 'utf-8'));
@@ -78,6 +79,13 @@ export default defineConfig(() => ({
     }),
 
     MkCert(),
+
+    compression({
+      threshold: 1500,
+      algorithm: 'brotliCompress',
+      skipIfLargerOrEqual: true,
+      exclude: [ 'ssr-manifest.json' ],
+    }),
 
     {
       name: 'provide-meta',
