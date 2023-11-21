@@ -81,7 +81,7 @@ export default defineConfig(() => ({
         name: 'Quasar Play',
         short_name: 'QuasarPlay',
         description: 'Quasar Play REPL',
-        theme_color: '#00b4ff',
+        theme_color: '#1f1f1f',
         background_color: '#1f1f1f',
         icons: [
           {
