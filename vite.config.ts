@@ -76,6 +76,13 @@ export default defineConfig(() => ({
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
+      manifest: {
+        name: 'Quasar Play',
+        short_name: 'QuasarPlay',
+        description: 'Quasar Play REPL',
+        theme_color: '#666',
+        icons: [],
+      },
     }),
 
     MkCert(),
