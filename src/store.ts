@@ -5,10 +5,16 @@ import { Dialog } from 'quasar';
 import { getCdnUrl } from './utils/cdn';
 import { locale } from './utils/locale';
 
+import MAIN_CODE from './templates/main.vue?raw';
+import SETTINGS_CODE from './templates/QuasarSettings.vue?raw';
+import BOOT_CODE from './templates/boot.ts?raw';
+import APP_CODE from './templates/App.vue?raw';
+import COUNTER_CODE from './templates/counter.ts?raw';
+import TS_CODE from './templates/tsconfig.json?raw';
+
 import type { StoreOptions } from '@vue/repl';
 
 const MAIN_FILE = 'src/main.vue';
-const MAIN_CODE = await import('./templates/main.vue?raw').then((o) => o.default);
 const APP_FILE = 'src/App.vue';
 
 const importMaps = {
@@ -44,11 +50,11 @@ function buildImports(currentImportMap: Record<string, Record<string, string>>, 
 
 const templateFiles = [
   { name: MAIN_FILE, code: MAIN_CODE, internal: true },
-  { name: 'src/QuasarSettings.vue', code: await import('./templates/QuasarSettings.vue?raw').then((o) => o.default), internal: true },
-  { name: 'src/boot.ts', code: await import('./templates/boot.ts?raw').then((o) => o.default) },
-  { name: APP_FILE, code: await import('./templates/App.vue?raw').then((o) => o.default) },
-  { name: 'src/counter.ts', code: await import('./templates/counter.ts?raw').then((o) => o.default) },
-  { name: 'tsconfig.json', code: await import('./templates/tsconfig.json?raw').then((o) => o.default) },
+  { name: 'src/QuasarSettings.vue', code: SETTINGS_CODE, internal: true },
+  { name: 'src/boot.ts', code: BOOT_CODE },
+  { name: APP_FILE, code: APP_CODE },
+  { name: 'src/counter.ts', code: COUNTER_CODE },
+  { name: 'tsconfig.json', code: TS_CODE },
 ];
 
 
