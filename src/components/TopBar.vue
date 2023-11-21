@@ -181,6 +181,7 @@ import {
   onBeforeUnmount,
   ref,
   reactive,
+  watch,
   type PropType,
 } from 'vue';
 import { Dialog } from 'quasar';
@@ -388,6 +389,12 @@ function onToggleSSR() {
 
   history.replaceState({}, '', String(url));
 }
+
+watch(props.store.activeFile, (fileName: string) => {
+  const url = new URL(location.href);
+  url.searchParams.set('file', fileName);
+  history.replaceState({}, '', String(url));
+});
 
 async function onFormatFiles() {
   const files = props.store.replStore.state.files;

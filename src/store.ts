@@ -29,7 +29,7 @@ const importMaps = {
 
   '@quasar/extras/roboto-font/roboto-font.css': [ '@quasar/extras', 'roboto-font/roboto-font.css' ],
   '@quasar/extras/material-icons/material-icons.css': [ '@quasar/extras', 'material-icons/material-icons.css' ],
-} as Record<string, [ string, string, string? ]>;
+} as Record<string, [ string, string, string?]>;
 
 function buildImports(currentImportMap: Record<string, Record<string, string>>, versions: Record<string, string> = {}) {
   const imports: Record<string, string> = currentImportMap.imports || {};
@@ -71,6 +71,7 @@ const templateFiles = [
 type ReplOptionsType = StoreOptions & {
   versions?: Record<string, string>;
   ssr?: boolean;
+  activeFile?: string;
 };
 
 export async function useRepl(options: ReplOptionsType = {}) {
@@ -119,7 +120,10 @@ export async function useRepl(options: ReplOptionsType = {}) {
   templateFiles.filter((file) => file.internal === true).forEach((file) => {
     replStore.state.files[ file.name ].hidden = true;
   });
-  replStore.setActive(APP_FILE);
+
+  const activeFile = typeof options.activeFile === 'string' && options.activeFile.trim().length > 0 ? options.activeFile.trim() : APP_FILE;
+  const fileNames = Object.keys(replStore.state.files);
+  replStore.setActive(fileNames.includes(activeFile) === true ? activeFile : APP_FILE);
 
   watch(() => versions.quasar, () => {
     const { activeFile } = replStore.state;
@@ -178,6 +182,7 @@ export async function useRepl(options: ReplOptionsType = {}) {
     productionMode,
     quasarCSSUrl,
     versions,
+    activeFile: computed(() => (replStore.state.activeFile.filename)),
 
     setVersions(newVersions: Record<string, string>) {
       Object.assign(versions, newVersions);
