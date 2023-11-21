@@ -65,6 +65,11 @@ const editorOptions = [
   { value: 'monaco', label: locale.shareOptions.editorMonaco },
   { value: 'mirror', label: locale.shareOptions.editorMirror },
 ];
+
+const urlSearch = new URLSearchParams(location.search);
+settings.preview = [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()) ? 'output' : 'code';
+settings.previewMode = (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase();
+settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'mirror' : 'monaco';
 </script>
 
 <script setup lang="ts">
@@ -83,12 +88,6 @@ onBeforeMount(() => {
       canShare.value = false;
     }
   }
-
-  const urlSearch = new URLSearchParams(location.search);
-  const editorName = (urlSearch.get('editor') || 'monaco').toLowerCase();
-  settings.preview = [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()) ? 'output' : 'code';
-  settings.previewMode = (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase();
-  settings.editor = editorName.includes('mir') ? 'mirror' : 'monaco';
 });
 
 defineEmits([
