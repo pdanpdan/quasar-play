@@ -74,23 +74,23 @@
           <q-btn
             style="min-width: 7ch"
             flat
-            :color="productionMode === true ? 'accent' : 'primary'"
+            :color="productionMode === true ? 'primary' : ''"
             padding="sm"
             :label="productionMode === true ? 'PROD' : 'DEV'"
             :aria-label="productionMode === true ? locale.prod.on : locale.prod.off"
             :title="productionMode === true ? locale.prod.on : locale.prod.off"
-            @click="productionMode = productionMode !== true"
+            @click="onToggleProductionMode"
           />
 
           <q-btn
             style="min-width: 9ch"
             flat
-            :color="ssr === true ? 'accent' : 'primary'"
+            :color="ssr === true ? 'primary' : ''"
             padding="sm"
             :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
             :aria-label="ssr === true ? locale.ssr.on : locale.ssr.off"
             :title="ssr === true ? locale.ssr.on : locale.ssr.off"
-            @click="ssr = ssr !== true"
+            @click="onToggleSSR"
           />
         </q-btn-group>
 
@@ -360,6 +360,32 @@ function onChangeVersion(pkg: string, version: string) {
   }
 
   props.store.setVersions(versionsMap);
+  history.replaceState({}, '', String(url));
+}
+
+function onToggleProductionMode() {
+  productionMode.value = productionMode.value !== true;
+
+  const url = new URL(location.href);
+  if (productionMode.value === true) {
+    url.searchParams.set('prod', '');
+  } else {
+    url.searchParams.delete('prod');
+  }
+
+  history.replaceState({}, '', String(url));
+}
+
+function onToggleSSR() {
+  ssr.value = ssr.value !== true;
+
+  const url = new URL(location.href);
+  if (ssr.value === true) {
+    url.searchParams.set('ssr', '');
+  } else {
+    url.searchParams.delete('ssr');
+  }
+
   history.replaceState({}, '', String(url));
 }
 

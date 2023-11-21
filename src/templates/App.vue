@@ -18,7 +18,7 @@
           dense
           @update:model-value="locale = $event"
         />
-        <div>{{ $t('message.hello') }}</div>
+        <div>{{ t('message.hello') }}</div>
 
         <q-btn
           unelevated
@@ -52,8 +52,8 @@ import { useI18n } from 'vue-i18n';
 
 import { useCounterStore } from './counter';
 
+const { locale, t } = useI18n();
 const counterStore = useCounterStore();
-const { locale } = useI18n();
 
 const langOptions = [
   { label: 'English', value: 'en' },

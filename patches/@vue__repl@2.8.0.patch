@@ -1,0 +1,20 @@
+diff --git a/dist/vue-repl.js b/dist/vue-repl.js
+index d931d504bc020db07e7b377487499c639763d3f9..aa6f4dfdce9680b8b94f475be732df9a32412c20 100644
+--- a/dist/vue-repl.js
++++ b/dist/vue-repl.js
+@@ -626,6 +626,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
+             ...ssrModules,
+             `import { renderToString as _renderToString } from 'vue/server-renderer'
+          import { createSSRApp as _createApp } from 'vue'
++         ${previewOptions?.customCode?.importCode || ""}
+          const AppComponent = __modules__["${mainFile}"].default
+          AppComponent.name = 'Repl'
+          const app = _createApp(AppComponent)
+@@ -633,6 +634,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
+            app.config.unwrapInjectedRef = true
+          }
+          app.config.warnHandler = () => {}
++         ${previewOptions?.customCode?.useCode || ""}
+          window.__ssr_promise__ = _renderToString(app).then(html => {
+            document.body.innerHTML = '<div id="app">' + html + '</div>' + \`${previewOptions?.bodyHTML || ""}\`
+          }).catch(err => {

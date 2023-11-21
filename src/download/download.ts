@@ -13,10 +13,6 @@ import type { ReplStoreType } from '../store';
 
 const internalImports = [
   '@vue/devtools-api',
-  '@intlify/shared',
-  '@intlify/core-base',
-  '@intlify/message-compiler',
-  'source-map-js',
   'vue-demi',
   '@quasar/extras/roboto-font/roboto-font.css',
   '@quasar/extras/material-icons/material-icons.css',

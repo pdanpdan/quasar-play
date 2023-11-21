@@ -3,7 +3,6 @@
     <top-bar :store="repl" />
 
     <repl-component
-      v-if="repl.compiling.value !== true"
       class="col"
       :theme="$q.dark.isActive ? 'dark' : 'light'"
       :editor="(editor as any)"
@@ -18,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect, shallowRef } from 'vue';
+import { watchEffect, shallowRef, computed } from 'vue';
 import merge from 'deepmerge';
 
 import { Repl as ReplComponent } from '@vue/repl';
@@ -58,57 +57,66 @@ import(editorName.includes('mir') ? '@vue/repl/codemirror-editor' : '@vue/repl/m
   editor.value = component.default;
 });
 
-// enable experimental features
-let sfcOptions = {
-  script: {
-    // refTransform: true,
-    // reactivityTransform: true
-  },
-};
-try {
-  const obj = JSON.parse(urlSearch.get('sfcOptions') || urlSearch.get('sfc-options') || 'null');
-  if (obj === Object(obj)) {
-    sfcOptions = merge(sfcOptions, obj);
-  }
-} catch (e) {
-  // caught
-}
-
-let previewOptions = {
-  headHTML: [
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons">',
-  ].join('\n'),
-
-  customCode: {
-    importCode: `const boot = __modules__["src/boot.ts"].default`,
-    useCode: `boot({ app })`,
-  },
-};
-try {
-  const obj = JSON.parse(urlSearch.get('previewOptions') || urlSearch.get('preview-options') || 'null');
-  if (obj === Object(obj)) {
-    previewOptions = merge(previewOptions, obj);
-  }
-} catch (e) {
-  // caught
-}
-
 const versions = parseVersions();
 
-const repl = useRepl({
+const repl = await useRepl({
   serializedState: location.hash.slice(1),
   showOutput: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()),
   outputMode: (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase(),
   productionMode: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('prod')).toLowerCase()),
+  ssr: [ '', 'true', 't', '1' ].includes(String(urlSearch.get('ssr')).toLowerCase()),
   versions,
 });
 
 const { ssr } = repl;
 
+// enable experimental features
+const sfcOptions = computed(() => {
+  let obj = {
+    script: {
+      // refTransform: true,
+      // reactivityTransform: true
+    },
+  };
+
+  try {
+    const objFromUrl = JSON.parse(urlSearch.get('sfcOptions') || urlSearch.get('sfc-options') || 'null');
+    if (objFromUrl === Object(objFromUrl)) {
+      obj = merge(obj, objFromUrl);
+    }
+  } catch (e) {
+    // caught
+  }
+
+  return obj;
+});
+
+const previewOptions = computed(() => {
+  let obj = {
+    headHTML: [
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons">',
+      `<link rel="stylesheet" href="${ repl.quasarCSSUrl.value }">`,
+    ].join('\n'),
+
+    customCode: {
+      importCode: `const boot = __modules__["src/boot.ts"].default`,
+      useCode: `boot({ app })`,
+    },
+  };
+  try {
+    const objFromUrl = JSON.parse(urlSearch.get('previewOptions') || urlSearch.get('preview-options') || 'null');
+    if (objFromUrl === Object(objFromUrl)) {
+      obj = merge(obj, objFromUrl);
+    }
+  } catch (e) {
+    // caught
+  }
+
+  return obj;
+});
+
 // persist state
 watchEffect(() => history.replaceState({}, '', repl.replStore.serialize()));
-
-await repl.replLoadPromise;
 </script>
 
 <style lang="sass">
