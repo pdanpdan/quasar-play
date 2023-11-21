@@ -122,7 +122,11 @@ export async function useRepl(options: ReplOptionsType = {}) {
   replStore.setActive(APP_FILE);
 
   watch(() => versions.quasar, () => {
+    const { activeFile } = replStore.state;
     replStore.addFile(new File(IMPORT_FILE, JSON.stringify(buildImports(replStore.getImportMap(), versions), null, 2)));
+    if (activeFile) {
+      replStore.setActive(activeFile.filename);
+    }
   });
 
   watch(() => versions.vue, () => {
@@ -130,8 +134,12 @@ export async function useRepl(options: ReplOptionsType = {}) {
   });
 
   watch(() => versions.typescript, () => {
+    const { activeFile } = replStore.state;
     replStore.addFile(new File(TS_FILE, patchTsConfig(replStore.state.files[ TS_FILE ].code, versions)));
     replStore.setTypeScriptVersion(versions.typescript);
+    if (activeFile) {
+      replStore.setActive(activeFile.filename);
+    }
   });
 
   watch(productionMode, () => {
