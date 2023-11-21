@@ -75,13 +75,37 @@ export default defineConfig(() => ({
       registerType: 'autoUpdate',
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+        sourcemap: true,
       },
       manifest: {
         name: 'Quasar Play',
         short_name: 'QuasarPlay',
         description: 'Quasar Play REPL',
-        theme_color: '#666',
-        icons: [],
+        theme_color: '#fff',
+        icons: [
+          {
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
       },
     }),
 

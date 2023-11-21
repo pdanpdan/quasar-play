@@ -2,11 +2,40 @@ import '@vue/repl/style.css';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import 'quasar/src/css/index.sass';
 
+import { registerSW } from 'virtual:pwa-register';
+
 import { createApp, h, Suspense, watchEffect, onBeforeMount } from 'vue';
 import { Quasar, useQuasar, Screen, Dialog, Notify, QSpinnerGrid } from 'quasar';
 import iconSet from 'quasar/icon-set/svg-material-symbols-outlined';
 
 import App from './App.vue';
+
+const intervalMS = 60 * 60 * 1000;
+registerSW({
+  onRegisteredSW(swUrl, r) {
+    r && setInterval(async () => {
+      if (
+        r.installing
+        || !navigator
+        || (('connection' in navigator) && !navigator.onLine)
+      ) {
+        return;
+      }
+
+      const resp = await fetch(swUrl, {
+        cache: 'no-store',
+        headers: {
+          cache: 'no-store',
+          'cache-control': 'no-cache',
+        },
+      });
+
+      if (resp?.status === 200) {
+        await r.update();
+      }
+    }, intervalMS);
+  },
+});
 
 // @ts-expect-error Custom window property
 window.VUE_DEVTOOLS_CONFIG = {
