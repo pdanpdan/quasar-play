@@ -1,10 +1,11 @@
 <template>
   <div class="row items-center no-wrap q-px-sm q-py-xs play__top-bar">
     <q-btn
-      class="play__quasar-logo"
+      class="play__quasar-logo q-mr-sm"
       flat
-      padding="xs sm"
-      size="18px"
+      :round="$q.screen.lt.lg"
+      :padding="$q.screen.gt.md ? 'xs sm' : 'none'"
+      :size="$q.screen.gt.md ? '16px' : '20px'"
       no-caps
       :label="$q.screen.gt.md ? 'Quasar' : undefined"
       aria-label="Quasar Docs"
@@ -13,15 +14,13 @@
       href="//quasar.dev"
     />
 
-    <div v-if="$q.screen.gt.md" class="text-caption text-grey-7 q-ml-sm q-mr-md">
+    <div v-if="$q.screen.gt.md" class="text-caption text-grey-7 q-mr-md">
       <div v-for="ver in playVersions" :key="ver" style="line-height: 1.3">{{ ver }}</div>
     </div>
 
     <q-btn
       v-if="$q.screen.lt.lg"
-      flat
-      round
-      padding="sm"
+      v-bind="iconBtnProps"
       :icon="symOutlinedTune"
       @click="overlayVisible = overlayVisible !== true"
     />
@@ -34,8 +33,19 @@
       "
       class="col"
     >
-      <div v-if="$q.screen.lt.lg" class="row justify-between text-caption text-grey-7">
-        <div v-for="ver in playVersions" :key="ver">{{ ver }}</div>
+      <div v-if="$q.screen.lt.lg" class="row items-center justify-between text-caption text-grey-7">
+        <q-btn
+          v-bind="iconBtnProps"
+          :icon="mdiGithub"
+          aria-label="GitHub"
+          title="GitHub"
+          target="_blank"
+          href="//github.com/pdanpdan/quasar-play/"
+        />
+
+        <div class="row items-center q-gutter-x-sm">
+          <div v-for="ver in playVersions" :key="ver">{{ ver }}</div>
+        </div>
       </div>
 
       <q-select
@@ -84,13 +94,13 @@
 
       <q-space />
 
-      <div class="row q-gutter-x-sm">
+      <div class="row items-center q-gutter-x-sm">
         <q-btn-group flat>
           <q-btn
             style="min-width: 7ch"
             flat
+            padding="xs sm"
             :color="productionMode === true ? 'primary' : ''"
-            padding="sm"
             :label="productionMode === true ? 'PROD' : 'DEV'"
             :aria-label="productionMode === true ? locale.prod.on : locale.prod.off"
             :title="productionMode === true ? locale.prod.on : locale.prod.off"
@@ -100,8 +110,8 @@
           <q-btn
             style="min-width: 9ch"
             flat
+            padding="xs sm"
             :color="ssr === true ? 'primary' : ''"
-            padding="sm"
             :label="`SSR ${ ssr === true ? 'ON' : 'OFF' }`"
             :aria-label="ssr === true ? locale.ssr.on : locale.ssr.off"
             :title="ssr === true ? locale.ssr.on : locale.ssr.off"
@@ -112,10 +122,8 @@
         <q-space v-if="$q.screen.lt.lg" class="q-px-lg" />
 
         <q-btn
-          flat
-          round
-          padding="sm"
           color="negative"
+          v-bind="iconBtnProps"
           :icon="symOutlinedDeleteForever"
           :aria-label="locale.reset"
           :title="locale.reset"
@@ -126,6 +134,8 @@
       <q-btn
         v-if="$q.screen.lt.lg"
         flat
+        padding="xs"
+        size="12px"
         :icon="symOutlinedExpandLess"
         :aria-label="locale.close"
         :title="locale.close"
@@ -135,11 +145,9 @@
 
     <q-space />
 
-    <div class="row q-gutter-sm q-pl-sm">
+    <div class="row items-center q-gutter-sm q-pl-sm">
       <q-btn
-        flat
-        round
-        padding="sm"
+        v-bind="iconBtnProps"
         :icon="symOutlinedShare"
         :aria-label="locale.share"
         :title="locale.share"
@@ -147,9 +155,7 @@
       />
 
       <q-btn
-        flat
-        round
-        padding="sm"
+        v-bind="iconBtnProps"
         :icon="symOutlinedDownload"
         :aria-label="locale.download"
         :title="locale.download"
@@ -157,9 +163,7 @@
       />
 
       <q-btn
-        flat
-        round
-        padding="sm"
+        v-bind="iconBtnProps"
         :icon="symOutlinedFormatAlignLeft"
         :aria-label="locale.format"
         :title="locale.format"
@@ -167,9 +171,7 @@
       />
 
       <q-btn
-        flat
-        round
-        padding="sm"
+        v-bind="iconBtnProps"
         :icon="$q.dark.isActive === true ? symOutlinedDarkMode : symOutlinedLightMode"
         :aria-label="$q.dark.isActive === true ? locale.theme.dark : locale.theme.light"
         :title="$q.dark.isActive === true ? locale.theme.dark : locale.theme.light"
@@ -177,9 +179,8 @@
       />
 
       <q-btn
-        flat
-        round
-        padding="sm"
+        v-if="$q.screen.gt.md"
+        v-bind="iconBtnProps"
         :icon="mdiGithub"
         aria-label="GitHub"
         title="GitHub"
@@ -243,6 +244,13 @@ const props = defineProps({
 const emit = defineEmits([ 'update:editor' ]);
 
 const overlayVisible = ref(false);
+
+const iconBtnProps = {
+  flat: true,
+  round: true,
+  padding: '6.87px',
+  size: '12px',
+};
 
 type RepoMetaType = {
   owner: string,
@@ -468,6 +476,13 @@ body.desktop .q-select__options-list
     position: relative
     background: var(--play-bg-color-base)
     transform-style: preserve-3d
+
+    .q-select.q-field--outlined.q-field--dense
+      .q-field__control,
+      .q-field__native
+        min-height: 30px
+      .q-field__marginal
+        height: 30px
 
   &__settings-overlay
     z-index: -1
