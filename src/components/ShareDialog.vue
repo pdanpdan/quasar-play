@@ -20,6 +20,7 @@
           color="primary"
           v-model="settings.previewMode"
           :options="previewModeOptions"
+          :disable="settings.preview !== 'output'"
         />
       </q-card-section>
 
@@ -46,7 +47,7 @@ const canShare = ref<boolean | null>(null);
 const settings = reactive({
   preview: 'output',
   previewMode: 'preview',
-  editor: 'mirror',
+  editor: 'codemirror',
 });
 
 const previewOptions = [
@@ -63,13 +64,13 @@ const previewModeOptions = [
 
 const editorOptions = [
   { value: 'monaco', label: locale.shareOptions.editorMonaco },
-  { value: 'mirror', label: locale.shareOptions.editorMirror },
+  { value: 'codemirror', label: locale.shareOptions.editorMirror },
 ];
 
 const urlSearch = new URLSearchParams(location.search);
 settings.preview = [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()) ? 'output' : 'code';
 settings.previewMode = (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase();
-settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'mirror' : 'monaco';
+settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco';
 </script>
 
 <script setup lang="ts">
