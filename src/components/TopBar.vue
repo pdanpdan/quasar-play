@@ -5,7 +5,7 @@
       flat
       :round="$q.screen.lt.lg"
       :padding="$q.screen.gt.md ? 'xs sm' : 'none'"
-      :size="$q.screen.gt.md ? '16px' : '20px'"
+      :size="$q.screen.gt.md ? '16px' : ($q.platform.is.mobile ? '23.33px' : '20px')"
       no-caps
       :label="$q.screen.gt.md ? 'Quasar' : undefined"
       aria-label="Quasar Docs"
@@ -53,6 +53,7 @@
         :key="pkg"
         outlined
         dense
+        behavior="menu"
         :model-value="meta.active"
         :options="meta.versions"
         popup-content-class="q-select__options-list"
@@ -67,6 +68,7 @@
       <q-select
         outlined
         dense
+        behavior="menu"
         :model-value="cdn"
         :options="cdnOptions"
         popup-content-class="q-select__options-list"
@@ -80,6 +82,7 @@
       <q-select
         outlined
         dense
+        behavior="menu"
         :model-value="editor"
         :options="editorOptions"
         map-options
@@ -200,7 +203,7 @@ import {
   watch,
   type PropType,
 } from 'vue';
-import { Dialog } from 'quasar';
+import { Dialog, useQuasar } from 'quasar';
 
 import {
   symOutlinedTune,
@@ -244,13 +247,21 @@ const props = defineProps({
 const emit = defineEmits([ 'update:editor' ]);
 
 const overlayVisible = ref(false);
+const { platform } = useQuasar();
 
-const iconBtnProps = {
-  flat: true,
-  round: true,
-  padding: '6.87px',
-  size: '12px',
-};
+const iconBtnProps = platform.is.mobile === true
+  ? {
+    flat: true,
+    round: true,
+    padding: '8px',
+    size: '14px',
+  }
+  : {
+    flat: true,
+    round: true,
+    padding: '6.87px',
+    size: '12px',
+  };
 
 type RepoMetaType = {
   owner: string,
@@ -483,6 +494,14 @@ body.desktop .q-select__options-list
         min-height: 30px
       .q-field__marginal
         height: 30px
+
+    body.mobile &
+      .q-select.q-field--outlined.q-field--dense
+        .q-field__control,
+        .q-field__native
+          min-height: 40px
+        .q-field__marginal
+          height: 40px
 
   &__settings-overlay
     z-index: -1

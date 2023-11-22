@@ -7,6 +7,7 @@
     <q-space />
 
     <q-btn
+      class="q-mx-md"
       flat
       dense
       icon="refresh"
@@ -14,6 +15,7 @@
     />
 
     <q-btn
+      class="q-mx-md"
       flat
       dense
       :icon="$q.dark.isActive ? 'dark_mode' : 'light_mode'"
@@ -21,6 +23,7 @@
     />
 
     <q-btn
+      class="q-ml-md"
       flat
       dense
       :icon="$q.lang.rtl === true ? 'format_textdirection_r_to_l' : 'format_textdirection_l_to_r'"
