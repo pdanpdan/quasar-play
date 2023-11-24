@@ -263,14 +263,14 @@ const iconBtnProps = platform.is.mobile === true
     size: '12px',
   };
 
-type RepoMetaType = {
-  owner: string,
-  repo: string,
-  name: string,
-  versions: string[],
-  active: string,
-  loaded: boolean,
-};
+interface RepoMetaType {
+  owner: string;
+  repo: string;
+  name: string;
+  versions: string[];
+  active: string;
+  loaded: boolean;
+}
 
 const repoOptions: Record<string, RepoMetaType> = reactive({
   quasar: {
@@ -516,6 +516,7 @@ body.desktop .q-select__options-list
     &--closed
       transform: translate3d(0, -100%, -1px)
       pointer-events: none
+      opacity: 0
 
     &--opened
       transform: translate3d(0, 0, -1px)

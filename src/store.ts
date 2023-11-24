@@ -68,11 +68,11 @@ const templateFiles = [
 ];
 
 
-type ReplOptionsType = StoreOptions & {
+interface ReplOptionsType extends StoreOptions {
   versions?: Record<string, string>;
   ssr?: boolean;
   activeFile?: string;
-};
+}
 
 export async function useRepl(options: ReplOptionsType = {}) {
   options = {
