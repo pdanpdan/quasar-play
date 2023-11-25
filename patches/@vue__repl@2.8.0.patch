@@ -1,5 +1,46 @@
+diff --git a/dist/style.css b/dist/style.css
+index 332c66d0cf0232f15b8fd5c53e5c053449ec52f9..24829d6b69755723befb5561f653833ccad20214 100644
+--- a/dist/style.css
++++ b/dist/style.css
+@@ -231,6 +231,7 @@ button.active[data-v-f221f6e0] {
+   margin-right: 10px;
+ }
+ .file[data-v-f661725b] {
++  position: relative;
+   display: inline-block;
+   font-size: 13px;
+   font-family: var(--font-code);
+@@ -248,18 +249,18 @@ button.active[data-v-f221f6e0] {
+   padding: 8px 10px 6px;
+   line-height: 20px;
+ }
++.file.pending span[data-v-f661725b] {
++  min-width: 50px;
++  padding-right: 32px
++}
+ .file.pending input[data-v-f661725b] {
+-  width: 90px;
+-  height: 30px;
+-  line-height: 30px;
++  position: absolute;
++  inset: 8px 6px 9px;
++  line-height: 20px;
+   outline: none;
+-  border: 1px solid var(--border);
+-  border-radius: 4px;
+-  padding: 0 0 0 10px;
+-  margin-top: 2px;
+-  margin-left: 6px;
+-  font-family: var(--font-code);
+-  font-size: 12px;
++  border: none;
++  padding: 0 2px;
++  min-width: 1px;
+ }
+ .file .remove[data-v-f661725b] {
+   display: inline-block;
 diff --git a/dist/vue-repl.js b/dist/vue-repl.js
-index d931d504bc020db07e7b377487499c639763d3f9..aa6f4dfdce9680b8b94f475be732df9a32412c20 100644
+index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504fcd23302 100644
 --- a/dist/vue-repl.js
 +++ b/dist/vue-repl.js
 @@ -626,6 +626,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
@@ -18,3 +59,36 @@ index d931d504bc020db07e7b377487499c639763d3f9..aa6f4dfdce9680b8b94f475be732df9a
           window.__ssr_promise__ = _renderToString(app).then(html => {
             document.body.innerHTML = '<div id="app">' + html + '</div>' + \`${previewOptions?.bodyHTML || ""}\`
           }).catch(err => {
+@@ -17176,6 +17178,12 @@ class File {
+     if (this.filename.endsWith(".ts")) {
+       return "typescript";
+     }
++    if (this.filename.endsWith(".md")) {
++      return "markdown";
++    }
++    if (this.filename.endsWith(".sass") || this.filename.endsWith(".scss")) {
++      return "scss";
++    }
+     return "javascript";
+   }
+ }
+@@ -17557,9 +17565,9 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+         return;
+       const filename = "src/" + pendingFilename.value;
+       const oldFilename = pending.value === true ? "" : pending.value;
+-      if (!/\.(vue|js|ts|css|json)$/.test(filename)) {
++      if (!/\.(vue|js|ts|css|json|md|s[ac]ss)$/.test(filename)) {
+         store.state.errors = [
+-          `Playground only supports *.vue, *.js, *.ts, *.css, *.json files.`
++          `Playground only supports *.vue, *.js, *.ts, *.css, *.json, *.md, *.sass, *.scss files.`
+         ];
+         return;
+       }
+@@ -17615,6 +17623,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+               }, _hoisted_5, 8, _hoisted_3$1)) : createCommentVNode("", true)
+             ], 42, _hoisted_1$3)) : createCommentVNode("", true),
+             pending.value === true && i === files.value.length - 1 || pending.value === file ? (openBlock(), createElementBlock("div", _hoisted_6, [
++              createElementVNode("span", _hoisted_2$1, pendingFilename.value, 1),
+               withDirectives(createElementVNode("input", {
+                 "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => pendingFilename.value = $event),
+                 spellcheck: "false",
