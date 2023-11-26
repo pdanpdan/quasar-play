@@ -59,16 +59,6 @@
   width: calc(50% - 8px)
 </style>
 
-<style lang="sass">
-.q-dialog-plugin.q-card--dark
-  box-shadow: none
-  border: 1px solid #666
-  filter: drop-shadow(0 0 2px #9999)
-body.body--dark
-  .q-dialog__backdrop
-    background: rgba(0, 0, 0, 0.7)
-</style>
-
 <script lang="ts">
 const canShare = ref<boolean | null>(null);
 const settings = reactive({
