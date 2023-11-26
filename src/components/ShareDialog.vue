@@ -36,8 +36,14 @@
         />
       </q-card-section>
 
-      <q-card-section class="q-py-xs q-px-sm">
-        <vue-qrious class="fit" :value="shareUrl" level="L" :size="551" :padding="10" />
+      <q-card-section v-if="shareUrl.length <= 2953" class="q-py-xs q-px-sm">
+        <vue-qrious
+          class="fit"
+          :value="shareUrl"
+          level="L"
+          :size="443"
+          :padding="10"
+        />
       </q-card-section>
 
       <q-card-actions align="right">
@@ -135,7 +141,6 @@ const shareUrl = computed(() => {
 
   url.searchParams.set('editor', settings.editor);
 
-  console.log(String(url).length);
   return String(url);
 });
 
