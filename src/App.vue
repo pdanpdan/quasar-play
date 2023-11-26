@@ -167,10 +167,17 @@ body
   color: var(--play-fg-color-base) !important
 
 .play-container
-  height: 100svh
+  --play-kbd-height: 0px
+  height: calc(100svh - env(keyboard-inset-height, var(--play-kbd-height)))
 
-  body.platform-ios &:has(.editor-container:focus-within)
-    height: 66svh
+  body.platform-ios &
+    transition: height .29999s .00001s
+
+    &:has(.editor-container:focus-within)
+      --play-kbd-height: 34svh
+
+  body.platform-android &:has(.editor-container:focus-within)
+    --play-kbd-height: 38svh
 
 .vue-repl,
 .file-selector,
