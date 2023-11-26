@@ -32,9 +32,9 @@
   "homepage": "https://pdanpdan.github.io/quasar-play",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --host",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "lint": "eslint --ext .js,.vue,.cjs,.ts .",
     "typecheck": "vue-tsc --noEmit",
     "generate-pwa-assets": "pwa-assets-generator"
@@ -63,8 +63,9 @@
     "vite": "^5.0.2",
     "vite-plugin-compression2": "^0.11.0",
     "vite-plugin-mkcert": "^1.17.1",
-    "vite-plugin-pwa": "^0.17.0",
+    "vite-plugin-pwa": "^0.17.2",
     "vue": "^3.3.9",
+    "vue-qrious": "^3.1.0",
     "vue-tsc": "^1.8.22",
     "workbox-window": "^7.0.0"
   },

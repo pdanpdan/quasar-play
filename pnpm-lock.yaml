@@ -80,11 +80,14 @@ devDependencies:
     specifier: ^1.17.1
     version: 1.17.1(vite@5.0.2)
   vite-plugin-pwa:
-    specifier: ^0.17.0
-    version: 0.17.0(vite@5.0.2)(workbox-build@7.0.0)(workbox-window@7.0.0)
+    specifier: ^0.17.2
+    version: 0.17.2(vite@5.0.2)(workbox-build@7.0.0)(workbox-window@7.0.0)
   vue:
     specifier: ^3.3.9
     version: 3.3.9(typescript@5.3.2)
+  vue-qrious:
+    specifier: ^3.1.0
+    version: 3.1.0(qrious@4.0.2)(vue@3.3.9)
   vue-tsc:
     specifier: ^1.8.22
     version: 1.8.22(typescript@5.3.2)
@@ -3999,6 +4002,10 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /qrious@4.0.2:
+    resolution: {integrity: sha512-xWPJIrK1zu5Ypn898fBp8RHkT/9ibquV2Kv24S/JY9VYEhMBMKur1gHVsOiNUh7PHP9uCgejjpZUHUIXXKoU/g==}
+    dev: true
+
   /quasar@2.14.0:
     resolution: {integrity: sha512-hxaQ/yd/qNGgpUrww4fQRSpklKnZN90HXhmhmPE5h+yFCcXreU+JgM3m/Mf6Qv7lMNQZQkYipgZ5Ja41DYkVUQ==}
     engines: {node: '>= 10.18.1', npm: '>= 6.13.4', yarn: '>= 1.21.1'}
@@ -4561,6 +4568,10 @@ packages:
       typescript: 5.3.2
     dev: true
 
+  /tslib@2.6.2:
+    resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
+    dev: true
+
   /tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
     dependencies:
@@ -4742,8 +4753,8 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-pwa@0.17.0(vite@5.0.2)(workbox-build@7.0.0)(workbox-window@7.0.0):
-    resolution: {integrity: sha512-cOyEG8EEc7JHmyMapTnjK2j0g2BIC3ErlmOHyGzVu8hqjyF9Jt6yWMmVNFtpA6v/NNyzP28ARf3vwzIAzR1kaw==}
+  /vite-plugin-pwa@0.17.2(vite@5.0.2)(workbox-build@7.0.0)(workbox-window@7.0.0):
+    resolution: {integrity: sha512-aVH9sxcTDumiWYiNcLrFqu+FdL79I2cT5EhlVe5V6nGcC64yQNGT1jamMytwi+OdfXl4VYic0LtoJ6JHMkM3ZQ==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       vite: ^3.1.0 || ^4.0.0 || ^5.0.0
@@ -4813,6 +4824,17 @@ packages:
       semver: 7.5.4
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /vue-qrious@3.1.0(qrious@4.0.2)(vue@3.3.9):
+    resolution: {integrity: sha512-qC5jw94b/VbUHFxYfumwqhSXKBJNEmaimhpwEmudqOiORMd5yPCFn/mPInnP5nWobvhvcV+S+U3Ger6w2dLyfQ==}
+    peerDependencies:
+      qrious: ^4.0.0
+      vue: ^2.7.0 || ^3.0.0
+    dependencies:
+      qrious: 4.0.2
+      tslib: 2.6.2
+      vue: 3.3.9(typescript@5.3.2)
     dev: true
 
   /vue-template-compiler@2.7.15:
