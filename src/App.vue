@@ -20,7 +20,6 @@
 import { watchEffect, shallowRef, computed, ref, watch, onMounted } from 'vue';
 import merge from 'deepmerge';
 
-import { Repl as ReplComponent } from '@vue/repl';
 import TopBar from './components/TopBar.vue';
 
 import { useRepl } from './store';
@@ -53,11 +52,9 @@ const urlSearch = new URLSearchParams(location.search);
 
 const editor = shallowRef({});
 const editorName = ref((urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco');
-watch(editorName, () => {
-  import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((component) => {
-    editor.value = component.default;
-  });
-}, { immediate: true });
+watch(editorName, async () => {
+  editor.value = await import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((module) => module.default);
+});
 
 const versions = parseVersions();
 
@@ -70,6 +67,9 @@ const repl = await useRepl({
   activeFile: String(urlSearch.get('file')),
   versions,
 });
+
+const ReplComponent = await import('@vue/repl').then((module) => module.Repl);
+editor.value = await import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((module) => module.default);
 
 const { ssr } = repl;
 
