@@ -167,7 +167,10 @@ body
   color: var(--play-fg-color-base) !important
 
 .play-container
-  height: 100dvh
+  height: 100svh
+
+  body.platform-ios &:has(.editor-container:focus-within)
+    height: 66svh
 
 .vue-repl,
 .file-selector,
