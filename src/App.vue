@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect, shallowRef, computed, ref, watch } from 'vue';
+import { watchEffect, shallowRef, computed, ref, watch, onMounted } from 'vue';
 import merge from 'deepmerge';
 
 import { Repl as ReplComponent } from '@vue/repl';
@@ -120,6 +120,12 @@ const previewOptions = computed(() => {
 
 // persist state
 watchEffect(() => history.replaceState({}, '', repl.replStore.serialize()));
+
+onMounted(() => {
+  if ('virtualKeyboard' in navigator) {
+    (navigator.virtualKeyboard as { overlaysContent: boolean }).overlaysContent = true;
+  }
+});
 </script>
 
 <style lang="sass">
@@ -178,6 +184,15 @@ body
 
   body.platform-android &:has(.editor-container:focus-within)
     --play-kbd-height: 38svh
+
+.q-dialog-plugin.q-card--dark
+  box-shadow: none
+  border: 1px solid #666
+  filter: drop-shadow(0 0 2px #9999)
+
+body.body--dark
+  .q-dialog__backdrop
+    background: rgba(0, 0, 0, 0.7)
 
 .vue-repl,
 .file-selector,
