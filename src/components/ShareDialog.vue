@@ -37,12 +37,14 @@
       </q-card-section>
 
       <q-card-section v-if="shareUrl.length <= 2953" class="q-py-xs q-px-sm">
-        <vue-qrious
+        <vue-qrcode
           class="fit"
+          tag="img"
           :value="shareUrl"
-          level="L"
-          :size="551"
-          :padding="10"
+          :options="{
+            version: 40,
+            errorCorrectionLevel: 'L',
+          }"
         />
       </q-card-section>
 
@@ -93,7 +95,7 @@ settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('
 <script setup lang="ts">
 import { ref, reactive, computed, onBeforeMount } from 'vue';
 import { useDialogPluginComponent, copyToClipboard, Notify } from 'quasar';
-import VueQrious from 'vue-qrious';
+import VueQrcode from '@chenfengyuan/vue-qrcode';
 
 import { locale } from '../utils/locale';
 
