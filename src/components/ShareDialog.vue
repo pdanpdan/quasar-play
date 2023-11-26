@@ -41,7 +41,7 @@
           class="fit"
           :value="shareUrl"
           level="L"
-          :size="443"
+          :size="551"
           :padding="10"
         />
       </q-card-section>
