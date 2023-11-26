@@ -511,7 +511,7 @@ body.desktop .q-select__options-list
     max-width: unset !important
     padding: 16px 16px 8px
     transition: var(--play-transition-transform)
-    filter: drop-shadow(2px 2px 4px #6666)
+    filter: drop-shadow(1px 1px 2px #9999)
 
     &--closed
       transform: translate3d(0, -100%, -1px)
