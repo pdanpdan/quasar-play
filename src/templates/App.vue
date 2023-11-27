@@ -29,6 +29,8 @@
           @click="counterStore.count += 1"
         />
 
+        <q-input type="number" v-model.number="counterStore.count" outlined dense />
+
         <div>Double that is {{ counterStore.doubleCount }}</div>
 
         <div>You are viewing this page</div>
