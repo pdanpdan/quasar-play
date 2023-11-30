@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@vue/repl@3.0.0':
-    hash: ows2omidkf3qje7pyxai4lvphi
+    hash: fsnqb5lkqflgm2keeh3sxfezua
     path: patches/@vue__repl@3.0.0.patch
 
 devDependencies:
@@ -39,7 +39,7 @@ devDependencies:
     version: 4.5.0(vite@5.0.4)(vue@3.3.9)
   '@vue/repl':
     specifier: ^3.0.0
-    version: 3.0.0(patch_hash=ows2omidkf3qje7pyxai4lvphi)
+    version: 3.0.0(patch_hash=fsnqb5lkqflgm2keeh3sxfezua)
   autoprefixer:
     specifier: ^10.4.16
     version: 10.4.16(postcss@8.4.31)
@@ -2205,7 +2205,7 @@ packages:
       '@vue/shared': 3.3.9
     dev: true
 
-  /@vue/repl@3.0.0(patch_hash=ows2omidkf3qje7pyxai4lvphi):
+  /@vue/repl@3.0.0(patch_hash=fsnqb5lkqflgm2keeh3sxfezua):
     resolution: {integrity: sha512-tGYibiftMo5yEuIKPWVsNuuNDejjJk0JQmvKtTm12KNLFqtGD7fWoGv1qUzcN9EAxwVeDgnT9ljRgqGVgZkyEg==}
     dev: true
     patched: true

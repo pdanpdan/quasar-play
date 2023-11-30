@@ -1,27 +1,23 @@
 <template>
   <template v-if="NO_SETTINGS === true">
-    <template v-if="NO_SUSPENSE === true">
-      <main-app v-if="onSSR !== true" />
-    </template>
+    <main-app v-if="NO_SUSPENSE === true" />
 
     <suspense v-else>
-      <main-app v-if="onSSR !== true" />
+      <main-app />
     </suspense>
   </template>
 
-  <template v-else>
-    <div v-if="NO_SUSPENSE === true">
+  <div v-else-if="NO_SUSPENSE === true">
+    <quasar-settings v-if="onSSR !== true" />
+    <main-app class="col" v-if="onSSR !== true" />
+  </div>
+
+  <suspense v-else>
+    <div>
       <quasar-settings v-if="onSSR !== true" />
       <main-app class="col" v-if="onSSR !== true" />
     </div>
-
-    <suspense v-else>
-      <div>
-        <quasar-settings v-if="onSSR !== true" />
-        <main-app class="col" v-if="onSSR !== true" />
-      </div>
-    </suspense>
-  </template>
+  </suspense>
 </template>
 
 <script lang="ts">
