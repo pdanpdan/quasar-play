@@ -1,4 +1,3 @@
-import '@vue/repl/style.css';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import 'quasar/src/css/index.sass';
 
