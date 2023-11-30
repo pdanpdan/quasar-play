@@ -1,7 +1,16 @@
 diff --git a/dist/vue-repl.css b/dist/vue-repl.css
-index d9f07c16f570d381b3d2e50c054ae256831dd69a..ea089f663d7eda5701ed1887042d06d9c9ef8970 100644
+index d9f07c16f570d381b3d2e50c054ae256831dd69a..3e22348ba61937000aaca360786b0ff63ad51266 100644
 --- a/dist/vue-repl.css
 +++ b/dist/vue-repl.css
+@@ -35,7 +35,7 @@
+   color: var(--text-light);
+   position: absolute;
+   left: 50%;
+-  bottom: 20px;
++  bottom: 17px;
+   background-color: var(--bg);
+   padding: 8px 12px;
+   border-radius: 8px;
 @@ -231,6 +231,7 @@ button.active[data-v-f221f6e0] {
    margin-right: 10px;
  }
@@ -39,6 +48,17 @@ index d9f07c16f570d381b3d2e50c054ae256831dd69a..ea089f663d7eda5701ed1887042d06d9
  }
  .file .remove[data-v-f661725b] {
    display: inline-block;
+@@ -306,8 +307,8 @@ button.active[data-v-f221f6e0] {
+ 
+ .wrapper[data-v-70b24951] {
+   position: absolute;
+-  bottom: 8px;
+-  right: 15px;
++  bottom: 21px;
++  left: 15px;
+   z-index: 11;
+   display: flex;
+   align-items: center;
 diff --git a/dist/vue-repl.js b/dist/vue-repl.js
 index 76ec54386cbda4ea0e0c054f1373d0a056a54d09..ebc371d3180a202473aaf3f227ea119b9929cd8d 100644
 --- a/dist/vue-repl.js
