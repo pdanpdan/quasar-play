@@ -1,7 +1,7 @@
-diff --git a/dist/style.css b/dist/style.css
-index 332c66d0cf0232f15b8fd5c53e5c053449ec52f9..24829d6b69755723befb5561f653833ccad20214 100644
---- a/dist/style.css
-+++ b/dist/style.css
+diff --git a/dist/vue-repl.css b/dist/vue-repl.css
+index d9f07c16f570d381b3d2e50c054ae256831dd69a..ea089f663d7eda5701ed1887042d06d9c9ef8970 100644
+--- a/dist/vue-repl.css
++++ b/dist/vue-repl.css
 @@ -231,6 +231,7 @@ button.active[data-v-f221f6e0] {
    margin-right: 10px;
  }
@@ -40,10 +40,10 @@ index 332c66d0cf0232f15b8fd5c53e5c053449ec52f9..24829d6b69755723befb5561f653833c
  .file .remove[data-v-f661725b] {
    display: inline-block;
 diff --git a/dist/vue-repl.js b/dist/vue-repl.js
-index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504fcd23302 100644
+index 76ec54386cbda4ea0e0c054f1373d0a056a54d09..ebc371d3180a202473aaf3f227ea119b9929cd8d 100644
 --- a/dist/vue-repl.js
 +++ b/dist/vue-repl.js
-@@ -626,6 +626,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
+@@ -623,6 +623,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
              ...ssrModules,
              `import { renderToString as _renderToString } from 'vue/server-renderer'
           import { createSSRApp as _createApp } from 'vue'
@@ -51,7 +51,7 @@ index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504
           const AppComponent = __modules__["${mainFile}"].default
           AppComponent.name = 'Repl'
           const app = _createApp(AppComponent)
-@@ -633,6 +634,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
+@@ -630,6 +631,7 @@ Tip: edit the "Import Map" tab to specify import paths for dependencies.`;
             app.config.unwrapInjectedRef = true
           }
           app.config.warnHandler = () => {}
@@ -59,7 +59,7 @@ index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504
           window.__ssr_promise__ = _renderToString(app).then(html => {
             document.body.innerHTML = '<div id="app">' + html + '</div>' + \`${previewOptions?.bodyHTML || ""}\`
           }).catch(err => {
-@@ -17176,6 +17178,12 @@ class File {
+@@ -17190,6 +17192,12 @@ class File {
      if (this.filename.endsWith(".ts")) {
        return "typescript";
      }
@@ -72,7 +72,7 @@ index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504
      return "javascript";
    }
  }
-@@ -17557,9 +17565,9 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+@@ -17585,9 +17593,9 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
          return;
        const filename = "src/" + pendingFilename.value;
        const oldFilename = pending.value === true ? "" : pending.value;
@@ -84,7 +84,7 @@ index d931d504bc020db07e7b377487499c639763d3f9..2cd08a2b87b1d525c6eb0d79053d1504
          ];
          return;
        }
-@@ -17615,6 +17623,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+@@ -17643,6 +17651,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
                }, _hoisted_5, 8, _hoisted_3$1)) : createCommentVNode("", true)
              ], 42, _hoisted_1$3)) : createCommentVNode("", true),
              pending.value === true && i === files.value.length - 1 || pending.value === file ? (openBlock(), createElementBlock("div", _hoisted_6, [
