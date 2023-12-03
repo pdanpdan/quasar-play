@@ -1,6 +1,7 @@
 import { reactive, ref, computed, watch } from 'vue';
 import { ReplStore, File } from '@pdanpdan/vue-repl';
 import { Dialog } from 'quasar';
+import { compileString } from 'sass';
 
 import { getCdnUrl } from './utils/cdn';
 import { locale } from './utils/locale';
@@ -90,6 +91,21 @@ interface ReplOptionsType extends StoreOptions {
   activeFile?: string;
 }
 
+const transformer: ReplOptionsType[ 'transformer' ] = async ({ code, filename }) => {
+  const untransformed = { code, filename };
+
+  if (filename.endsWith('.sass') || filename.endsWith('.scss')) {
+    try {
+      const newCode = compileString(code, { style: 'compressed', syntax: filename.endsWith('.sass') ? 'indented' : 'scss' });
+      return { code: newCode.css, filename: `${ filename.split('.').slice(-1).join('.') }.css`, errors: [] };
+    } catch (err) {
+      return { code, filename, errors: [ String(err) ] };
+    }
+  }
+
+  return untransformed;
+};
+
 export async function useRepl(options: ReplOptionsType = {}) {
   options = {
     showOutput: false,
@@ -105,6 +121,8 @@ export async function useRepl(options: ReplOptionsType = {}) {
       quasar: __QUASAR_VERSION__,
       ...options.versions,
     },
+    supportedLanguages: [ 'sass', 'scss', 'md' ],
+    transformer,
   };
 
   const versions = reactive({ ...options.versions });
