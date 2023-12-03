@@ -1,5 +1,5 @@
 import { reactive, ref, computed, watch } from 'vue';
-import { ReplStore, File } from '@vue/repl';
+import { ReplStore, File } from '@pdanpdan/vue-repl';
 import { Dialog } from 'quasar';
 
 import { getCdnUrl } from './utils/cdn';
@@ -12,7 +12,7 @@ import APP_CODE from './templates/App.vue?raw';
 import COUNTER_CODE from './templates/counter.ts?raw';
 import TS_CODE from './templates/tsconfig.json?raw';
 
-import type { StoreOptions } from '@vue/repl';
+import type { StoreOptions } from '@pdanpdan/vue-repl';
 
 const MAIN_FILE = 'src/main.vue';
 const APP_FILE = 'src/App.vue';

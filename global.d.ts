@@ -13,4 +13,4 @@ declare module '*.vue' {
   export default component;
 }
 
-declare module '@vue/repl/monaco-editor';
+declare module '@pdanpdan/vue-repl/monaco-editor';
