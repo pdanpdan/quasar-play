@@ -33,29 +33,40 @@
 
         <div>Double that is {{ counterStore.doubleCount }}</div>
 
-        <div>You are viewing this page</div>
-        <router-view class="q-pa-lg" style="border: 2px solid #999" />
+        <div>You are viewing this page, styled using SASS</div>
+        <router-view class="q-pa-lg styled-with-sass" style="border: 2px solid #999" />
+
+        <q-color v-model="bgColor" />
       </div>
     </div>
   </div>
 </template>
 
-<style>
-#app > div {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
+<style lang="sass">
+#app > div
+  min-height: 100dvh
+  display: flex
+  flex-direction: column
+  flex-wrap: nowrap
+
+.styled-with-sass
+  color: v-bind(color)
+  background-color: v-bind(bgColor)
 </style>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { colors } from 'quasar';
 
 import { useCounterStore } from './counter';
 
 const { locale, t } = useI18n();
 const counterStore = useCounterStore();
+const { luminosity } = colors;
+
+const bgColor = ref('#b80ba1');
+const color = computed(() => luminosity(bgColor.value) > .25 ? '#000' : '#fff');
 
 const langOptions = [
   { label: 'English', value: 'en' },

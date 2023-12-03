@@ -6,8 +6,12 @@ const config = {
     del: 'Delete',
     doDownload: 'Download project files?',
     download: 'Download project',
-    doReset: 'Reset (delete) all files in project?',
     reset: 'Reset (delete) project',
+    doReset: 'Reset (delete) all files in project?',
+    resetOptions: {
+      clean: 'Clean template',
+      full: 'Full demo',
+    },
     doneShare: 'Sharable URL has been copied to clipboard',
     share: 'Share project',
     shareTitle: 'Share settings',

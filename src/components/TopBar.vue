@@ -222,6 +222,7 @@ import LogoDark from '../assets/logo-dark.svg?url';
 import LogoLight from '../assets/logo-light.svg?url';
 
 import ShareDialog from './ShareDialog.vue';
+import ResetDialog from './ResetDialog.vue';
 
 import {
   cdnTemplates,
@@ -373,23 +374,12 @@ function onDownload() {
 }
 
 function onReset() {
-  Dialog.create({
-    title: locale.reset,
-    message: locale.doReset,
-    ok: {
-      flat: true,
-      color: 'negative',
-      label: locale.reset,
-    },
-    cancel: {
-      flat: true,
-      color: '',
-      label: locale.cancel,
-    },
-    focus: 'cancel',
-  }).onOk(() => {
+  Dialog.create({ component: ResetDialog }).onOk(({ type }) => {
     const url = new URL(location.href);
     url.hash = '';
+    if (type === 'clean') {
+      url.searchParams.set('clean', '');
+    }
     location.href = String(url);
   });
 }
