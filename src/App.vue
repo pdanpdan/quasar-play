@@ -7,6 +7,7 @@
       :theme="$q.dark.isActive ? 'dark' : 'light'"
       :editor="(editor as any)"
       :store="repl.replStore"
+      :auto-save="autoSave"
       :ssr="ssr"
       :sfc-options="sfcOptions"
       :preview-options="previewOptions"
@@ -53,7 +54,7 @@ const urlSearch = new URLSearchParams(location.search);
 const editor = shallowRef({});
 const editorName = ref((urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco');
 watch(editorName, async () => {
-  editor.value = await import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((module) => module.default);
+  editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => module.default);
 });
 
 const versions = parseVersions();
@@ -68,10 +69,10 @@ const repl = await useRepl({
   versions,
 });
 
-const ReplComponent = await import('@vue/repl').then((module) => module.Repl);
-editor.value = await import(editorName.value === 'codemirror' ? '@vue/repl/codemirror-editor' : '@vue/repl/monaco-editor').then((module) => module.default);
+const ReplComponent = await import('@pdanpdan/vue-repl').then((module) => module.Repl);
+editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => module.default);
 
-const { ssr } = repl;
+const { ssr, autoSave } = repl;
 
 // enable experimental features
 const sfcOptions = computed(() => {

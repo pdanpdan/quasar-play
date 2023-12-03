@@ -26,7 +26,7 @@ export default defineConfig(() => ({
     __VUE_VERSION__: JSON.stringify(getVersion('vue')),
     __TS_VERSION__: JSON.stringify(getVersion('typescript')),
     __PLAY_VERSION__: JSON.stringify(playPkg.version),
-    __REPL_VERSION__: JSON.stringify(getVersion('@vue/repl')),
+    __REPL_VERSION__: JSON.stringify(getVersion('@pdanpdan/vue-repl')),
     __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
   },
 
@@ -49,7 +49,7 @@ export default defineConfig(() => ({
 
   optimizeDeps: {
     force: true,
-    exclude: [ '@vue/repl', 'vue/server-renderer' ],
+    exclude: [ '@pdanpdan/vue-repl', 'vue/server-renderer' ],
   },
 
   preview: {

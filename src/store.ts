@@ -1,18 +1,23 @@
 import { reactive, ref, computed, watch } from 'vue';
-import { ReplStore, File } from '@vue/repl';
+import { ReplStore, File } from '@pdanpdan/vue-repl';
 import { Dialog } from 'quasar';
+import { compileString } from 'sass';
 
 import { getCdnUrl } from './utils/cdn';
 import { locale } from './utils/locale';
 
-import MAIN_CODE from './templates/main.vue?raw';
 import SETTINGS_CODE from './templates/QuasarSettings.vue?raw';
-import BOOT_CODE from './templates/boot.ts?raw';
-import APP_CODE from './templates/App.vue?raw';
-import COUNTER_CODE from './templates/counter.ts?raw';
 import TS_CODE from './templates/tsconfig.json?raw';
+import MAIN_CODE from './templates/main.vue?raw';
 
-import type { StoreOptions } from '@vue/repl';
+import FULL_APP_CODE from './templates/full/App.vue?raw';
+import FULL_BOOT_CODE from './templates/full/boot.ts?raw';
+import FULL_COUNTER_CODE from './templates/full/counter.ts?raw';
+
+import CLEAN_APP_CODE from './templates/clean/App.vue?raw';
+import CLEAN_BOOT_CODE from './templates/clean/boot.ts?raw';
+
+import type { StoreOptions } from '@pdanpdan/vue-repl';
 
 const MAIN_FILE = 'src/main.vue';
 const APP_FILE = 'src/App.vue';
@@ -58,21 +63,48 @@ function patchTsConfig(code: string, versions: Record<string, string> = {}) {
   return code;
 }
 
-const templateFiles = [
-  { name: 'src/boot.ts', code: BOOT_CODE },
-  { name: APP_FILE, code: APP_CODE },
-  { name: 'src/counter.ts', code: COUNTER_CODE },
+const templateFilesFull = [
+  { name: 'src/boot.ts', code: FULL_BOOT_CODE },
+  { name: APP_FILE, code: FULL_APP_CODE },
+  { name: 'src/counter.ts', code: FULL_COUNTER_CODE },
   { name: MAIN_FILE, code: MAIN_CODE, internal: true },
   { name: 'src/QuasarSettings.vue', code: SETTINGS_CODE, internal: true },
   { name: TS_FILE, code: TS_CODE },
 ];
 
+const templateFilesClean = [
+  { name: 'src/boot.ts', code: CLEAN_BOOT_CODE },
+  { name: APP_FILE, code: CLEAN_APP_CODE },
+  { name: MAIN_FILE, code: MAIN_CODE, internal: true },
+  { name: 'src/QuasarSettings.vue', code: SETTINGS_CODE, internal: true },
+  { name: TS_FILE, code: TS_CODE },
+];
+
+const url = new URL(location.href);
+const templateFiles = [ '', 'true', 't', '1' ].includes(String(url.searchParams.get('clean')).toLowerCase()) ? templateFilesClean : templateFilesFull;
+url.searchParams.delete('clean');
+history.replaceState({}, '', url);
 
 interface ReplOptionsType extends StoreOptions {
   versions?: Record<string, string>;
   ssr?: boolean;
   activeFile?: string;
 }
+
+const transformer: ReplOptionsType[ 'transformer' ] = async ({ code, filename }) => {
+  const untransformed = { code, filename };
+
+  if (filename.endsWith('.sass') || filename.endsWith('.scss')) {
+    try {
+      const newCode = compileString(code, { style: 'compressed', syntax: filename.endsWith('.sass') ? 'indented' : 'scss' });
+      return { code: newCode.css, filename: `${ filename.split('.').slice(-1).join('.') }.css`, errors: [] };
+    } catch (err) {
+      return { code, filename, errors: [ String(err) ] };
+    }
+  }
+
+  return untransformed;
+};
 
 export async function useRepl(options: ReplOptionsType = {}) {
   options = {
@@ -89,10 +121,13 @@ export async function useRepl(options: ReplOptionsType = {}) {
       quasar: __QUASAR_VERSION__,
       ...options.versions,
     },
+    supportedLanguages: [ 'sass', 'scss', 'md' ],
+    transformer,
   };
 
   const versions = reactive({ ...options.versions });
   const ssr = ref(options.ssr === true);
+  const autoSave = ref(250);
   const productionMode = ref(options.productionMode === true);
   const quasarCSSUrl = computed(() => getCdnUrl('quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ]));
 
@@ -179,6 +214,7 @@ export async function useRepl(options: ReplOptionsType = {}) {
     replStore,
 
     ssr,
+    autoSave,
     productionMode,
     quasarCSSUrl,
     versions,
