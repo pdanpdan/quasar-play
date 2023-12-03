@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
+    "@pdanpdan/vue-repl": "^1.0.4",
     "@quasar/extras": "^1.16.9",
     "@quasar/vite-plugin": "^1.6.0",
     "@types/file-saver": "^2.0.7",
@@ -49,7 +50,6 @@
     "@typescript-eslint/parser": "^6.13.1",
     "@vite-pwa/assets-generator": "^0.0.11",
     "@vitejs/plugin-vue": "^4.5.1",
-    "@pdanpdan/vue-repl": "^1.0.4",
     "autoprefixer": "^10.4.16",
     "deepmerge": "^4.3.1",
     "eslint": "^8.55.0",
