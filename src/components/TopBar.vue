@@ -167,6 +167,15 @@
 
       <q-btn
         v-bind="iconBtnProps"
+        :color="autoSave === 0 ? 'negative' : 'positive'"
+        :icon="symOutlinedSaveAs"
+        :aria-label="autoSave === 0 ? locale.autoSave.off : locale.autoSave.on"
+        :title="autoSave === 0 ? locale.autoSave.off : locale.autoSave.on"
+        @click="onToggleAutoSave"
+      />
+
+      <q-btn
+        v-bind="iconBtnProps"
         :icon="symOutlinedFormatAlignLeft"
         :aria-label="locale.format"
         :title="locale.format"
@@ -214,6 +223,7 @@ import {
   symOutlinedFormatAlignLeft,
   symOutlinedDeleteForever,
   symOutlinedExpandLess,
+  symOutlinedSaveAs,
 } from '@quasar/extras/material-symbols-outlined';
 import {
   mdiGithub,
@@ -349,7 +359,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('blur', handleWindowBlur);
 });
 
-const { ssr, productionMode } = props.store;
+const { autoSave, productionMode, ssr } = props.store;
 
 function onShare() {
   Dialog.create({ component: ShareDialog });
@@ -432,6 +442,10 @@ function onToggleSSR() {
   }
 
   history.replaceState({}, '', String(url));
+}
+
+function onToggleAutoSave() {
+  autoSave.value = autoSave.value === 0 ? 250 : 0;
 }
 
 watch(props.store.activeFile, (fileName: string) => {

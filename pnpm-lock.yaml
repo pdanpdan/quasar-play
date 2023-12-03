@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^2.0.0
     version: 2.0.0(qrcode@1.5.3)(vue@3.3.9)
   '@pdanpdan/vue-repl':
-    specifier: ^1.0.2
-    version: 1.0.2(typescript@5.3.2)
+    specifier: ^1.0.4
+    version: 1.0.4(typescript@5.3.2)
   '@quasar/extras':
     specifier: ^1.16.9
     version: 1.16.9
@@ -21,7 +21,7 @@ devDependencies:
     specifier: ^2.0.7
     version: 2.0.7
   '@types/node':
-    specifier: ^20.10.2
+    specifier: ^20.10.3
     version: 20.10.3
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.13.1
@@ -1719,8 +1719,8 @@ packages:
       '@octokit/openapi-types': 19.1.0
     dev: true
 
-  /@pdanpdan/vue-repl@1.0.2(typescript@5.3.2):
-    resolution: {integrity: sha512-nIFxi83Nen21eCEjgDRRanC09R03f8O+MrxQSPYMiWltD8UcoF9felu/HGkBfrVVf4Y7MoHP/mkR2ClqJYHTvA==}
+  /@pdanpdan/vue-repl@1.0.4(typescript@5.3.2):
+    resolution: {integrity: sha512-jfhHkyqYVyB7y3PAyJ+DdjAEyf9Hq3+R3JtZuql6aCnpRY6vCCTZAZONxbsFNbzTYrrhkyfk/YgOL05t+qun7A==}
     peerDependencies:
       typescript: ^5.0.0 || ^4.0.0
     dependencies:

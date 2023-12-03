@@ -47,6 +47,11 @@ const config = {
       codemirror: 'CodeMirror',
       monaco: 'Monaco',
     },
+
+    autoSave: {
+      on: 'Auto save/update',
+      off: 'Manual save/update (CTRL/META+S)',
+    },
   },
 };
 

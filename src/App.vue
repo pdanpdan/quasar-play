@@ -7,6 +7,7 @@
       :theme="$q.dark.isActive ? 'dark' : 'light'"
       :editor="(editor as any)"
       :store="repl.replStore"
+      :auto-save="autoSave"
       :ssr="ssr"
       :sfc-options="sfcOptions"
       :preview-options="previewOptions"
@@ -71,7 +72,7 @@ const repl = await useRepl({
 const ReplComponent = await import('@pdanpdan/vue-repl').then((module) => module.Repl);
 editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => module.default);
 
-const { ssr } = repl;
+const { ssr, autoSave } = repl;
 
 // enable experimental features
 const sfcOptions = computed(() => {

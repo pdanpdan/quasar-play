@@ -127,6 +127,7 @@ export async function useRepl(options: ReplOptionsType = {}) {
 
   const versions = reactive({ ...options.versions });
   const ssr = ref(options.ssr === true);
+  const autoSave = ref(250);
   const productionMode = ref(options.productionMode === true);
   const quasarCSSUrl = computed(() => getCdnUrl('quasar', 'dist/quasar.rtl.prod.css', versions[ 'quasar' ]));
 
@@ -213,6 +214,7 @@ export async function useRepl(options: ReplOptionsType = {}) {
     replStore,
 
     ssr,
+    autoSave,
     productionMode,
     quasarCSSUrl,
     versions,
