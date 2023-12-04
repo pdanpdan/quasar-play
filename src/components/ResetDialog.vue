@@ -15,8 +15,8 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn autofocus flat color="primary" :label="locale.cancel" @click="onDialogHide" />
         <q-btn flat color="negative" :label="locale.reset" @click="onReset" />
+        <q-btn autofocus flat color="primary" :label="locale.cancel" @click="onDialogHide" />
       </q-card-actions>
     </q-card>
   </q-dialog>
