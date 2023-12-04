@@ -43,7 +43,7 @@
 </template>
 
 <style lang="sass">
-#app > div
+#app > .repl-container
   min-height: 100dvh
   display: flex
   flex-direction: column
