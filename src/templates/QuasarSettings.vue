@@ -32,6 +32,17 @@
   </q-bar>
 </template>
 
+<style scoped lang="sass">
+.q-bar
+  position: sticky
+  top: 0
+  z-index: 1
+  background-color: #cfcfcf
+
+  &--dark
+    background-color: #3f3f3f
+</style>
+
 <script setup lang="ts">
 function onReload() {
   location.reload();
