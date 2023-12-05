@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^2.0.0
     version: 2.0.0(qrcode@1.5.3)(vue@3.3.10)
   '@pdanpdan/vue-repl':
-    specifier: ^1.0.7
-    version: 1.0.7(typescript@5.3.2)
+    specifier: ^1.0.8
+    version: 1.0.8(typescript@5.3.2)
   '@quasar/extras':
     specifier: ^1.16.9
     version: 1.16.9
@@ -1719,8 +1719,8 @@ packages:
       '@octokit/openapi-types': 19.1.0
     dev: true
 
-  /@pdanpdan/vue-repl@1.0.7(typescript@5.3.2):
-    resolution: {integrity: sha512-0wgp79LuhGM24bh+kc7oRC2aM869wpYoHpvQzsUGecQKRfKarZC9ucbml7opcBJB0r1+kDZY/7zxqXKnTDTQLg==}
+  /@pdanpdan/vue-repl@1.0.8(typescript@5.3.2):
+    resolution: {integrity: sha512-to8TzR3jeyGJBLc1iTBfhp050v0OVAeoKSIpHZMJ/UGEXnRJuLuPKjeKzHiMLHlkPp25S+OiZ/6527ST1xl0tA==}
     peerDependencies:
       typescript: ^5.0.0 || ^4.0.0
     dependencies:
