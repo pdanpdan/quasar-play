@@ -78,8 +78,8 @@ export default function ({ app }: { app: App; }) {
   });
 }
 
-// set to `true` to not show the top Qusar Settings bar
-// mult be set to `true` if you do not use or load quasar in `boot.ts`
+// set to `true` to not show the top Quasar Settings bar
+// if you do not load or use Quasar in `boot.ts` you must set this to `true`
 export const NO_SETTINGS = false;
 
 // set to `true` if you do not want your code to be wrapped in `Suspense` component
