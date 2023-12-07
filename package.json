@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
-    "@pdanpdan/vue-repl": "^1.0.10",
+    "@pdanpdan/vue-repl": "^1.0.11",
     "@quasar/extras": "^1.16.9",
     "@quasar/vite-plugin": "^1.6.0",
     "@types/file-saver": "^2.0.7",
