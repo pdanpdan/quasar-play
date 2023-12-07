@@ -1,6 +1,6 @@
 {
   "name": "@pdanpdan/quasar-play",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Playground for Quasar Framework",
   "productName": "Quasar Play",
   "author": {
@@ -41,11 +41,11 @@
   },
   "devDependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
-    "@pdanpdan/vue-repl": "^1.0.9",
+    "@pdanpdan/vue-repl": "^1.0.10",
     "@quasar/extras": "^1.16.9",
     "@quasar/vite-plugin": "^1.6.0",
     "@types/file-saver": "^2.0.7",
-    "@types/node": "^20.10.3",
+    "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "@vite-pwa/assets-generator": "^0.0.11",

@@ -6,8 +6,7 @@ import { Quasar } from 'quasar';
 // function is awaited before continue
 export default function ({ app }: { app: App; }) {
   app.use(Quasar, {
-    plugins: {
-    },
+    plugins: {},
 
     config: {
       dark: 'auto',
