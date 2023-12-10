@@ -1,11 +1,14 @@
 import {
   combinePresetAndAppleSplashScreens,
   defineConfig,
-  minimalPreset,
+  minimal2023Preset,
 } from '@vite-pwa/assets-generator/config';
 
 export default defineConfig({
-  preset: combinePresetAndAppleSplashScreens(minimalPreset, {
+  headLinkOptions: {
+    preset: '2023',
+  },
+  preset: combinePresetAndAppleSplashScreens(minimal2023Preset, {
     darkResizeOptions: { background: '#1f1f1f', fit: 'contain' },
   }, [
     'iPad Pro 12.9"',
