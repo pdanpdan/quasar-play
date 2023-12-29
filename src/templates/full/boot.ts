@@ -7,7 +7,7 @@ Add imports as needed to `Import Map`
 Pinia:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.5.1/dist/index.mjs",
     "pinia": "https://unpkg.com/pinia/dist/pinia.esm-browser.js",
     "vue-demi": "https://unpkg.com/vue-demi/lib/index.mjs"
   }
@@ -16,7 +16,7 @@ Pinia:
 VueRouter:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.5.1/dist/index.mjs",
     "vue-router": "https://unpkg.com/vue-router/dist/vue-router.esm-browser.js"
   }
 }
@@ -24,7 +24,7 @@ VueRouter:
 VueI18n:
 {
   "imports": {
-    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api/lib/esm/index.js",
+    "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.5.1/dist/index.mjs",
     "vue-i18n": "https://unpkg.com/vue-i18n/dist/vue-i18n.esm-browser.js"
   }
 }
