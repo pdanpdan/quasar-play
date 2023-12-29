@@ -26,7 +26,7 @@ const TS_FILE = 'tsconfig.json';
 
 const importMaps = {
   quasar: [ 'quasar', 'dist/quasar.esm.prod.js' ],
-  '@vue/devtools-api': [ '@vue/devtools-api', 'lib/esm/index.js' ],
+  '@vue/devtools-api': [ '@vue/devtools-api', 'lib/esm/index.js', '6.5.1' ],
   'vue-i18n': [ 'vue-i18n', 'dist/vue-i18n.esm-browser.js' ],
   pinia: [ 'pinia', 'dist/pinia.esm-browser.js' ],
   'vue-demi': [ 'vue-demi', 'lib/index.mjs', '0.13.11' ],
