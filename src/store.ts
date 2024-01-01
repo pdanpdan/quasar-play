@@ -1,7 +1,6 @@
 import { reactive, ref, computed, watch } from 'vue';
 import { ReplStore, File } from '@pdanpdan/vue-repl';
 import { Dialog } from 'quasar';
-import { compileString } from 'sass';
 
 import { getCdnUrl } from './utils/cdn';
 import { locale } from './utils/locale';
@@ -96,6 +95,7 @@ const transformer: ReplOptionsType[ 'transformer' ] = async ({ code, filename })
 
   if (filename.endsWith('.sass') || filename.endsWith('.scss')) {
     try {
+      const compileString = await import('sass').then((module) => module.compileString);
       const newCode = compileString(code, { style: 'compressed', syntax: filename.endsWith('.sass') ? 'indented' : 'scss' });
       return { code: newCode.css, filename: `${ filename.split('.').slice(-1).join('.') }.css`, errors: [] };
     } catch (err) {
