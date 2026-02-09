@@ -12,27 +12,29 @@ import App from './App.vue';
 const intervalMS = 60 * 60 * 1000;
 registerSW({
   onRegisteredSW(swUrl, r) {
-    r && setInterval(async () => {
-      if (
-        r.installing
+    if (r) {
+      setInterval(async () => {
+        if (
+          r.installing
         || !navigator
         || (('connection' in navigator) && !navigator.onLine)
-      ) {
-        return;
-      }
+        ) {
+          return;
+        }
 
-      const resp = await fetch(swUrl, {
-        cache: 'no-store',
-        headers: {
+        const resp = await fetch(swUrl, {
           cache: 'no-store',
-          'cache-control': 'no-cache',
-        },
-      });
+          headers: {
+            cache: 'no-store',
+            'cache-control': 'no-cache',
+          },
+        });
 
-      if (resp?.status === 200) {
-        await r.update();
-      }
-    }, intervalMS);
+        if (resp?.status === 200) {
+          await r.update();
+        }
+      }, intervalMS);
+    }
   },
 });
 

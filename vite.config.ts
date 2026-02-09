@@ -68,7 +68,8 @@ export default defineConfig(() => ({
     }),
 
     quasar({
-      sassVariables: 'src/styles/variables.sass',
+      autoImportComponentCase: 'combined',
+      sassVariables: resolve(__dirname, 'src/styles/variables.sass'),
     }),
 
     VitePWA({
@@ -114,7 +115,7 @@ export default defineConfig(() => ({
 
     compression({
       threshold: 1500,
-      algorithm: 'brotliCompress',
+      algorithms: [ 'brotliCompress' ],
       skipIfLargerOrEqual: true,
       exclude: [ 'ssr-manifest.json' ],
     }),
