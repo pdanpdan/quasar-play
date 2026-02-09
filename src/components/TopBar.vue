@@ -79,7 +79,7 @@
         </template>
       </q-select>
 
-      <q-select
+      <!-- <q-select
         outlined
         dense
         behavior="menu"
@@ -93,7 +93,7 @@
         <template #prepend>
           <div class="text-body2">{{ locale.editor.label }}</div>
         </template>
-      </q-select>
+      </q-select> -->
 
       <q-space />
 
@@ -139,7 +139,7 @@
         flat
         padding="xs"
         size="12px"
-        :icon="symOutlinedExpandLess"
+        :icon="symOutlinedKeyboardArrowUp"
         :aria-label="locale.close"
         :title="locale.close"
         @click="overlayVisible = overlayVisible !== true"
@@ -222,7 +222,7 @@ import {
   symOutlinedDownload,
   symOutlinedFormatAlignLeft,
   symOutlinedDeleteForever,
-  symOutlinedExpandLess,
+  symOutlinedKeyboardArrowUp,
   symOutlinedSaveAs,
 } from '@quasar/extras/material-symbols-outlined';
 import {
@@ -255,7 +255,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([ 'update:editor' ]);
+// const emit = defineEmits([ 'update:editor' ]);
 
 const overlayVisible = ref(false);
 const { platform } = useQuasar();
@@ -340,10 +340,10 @@ const playVersions = [`play@${ __PLAY_VERSION__ }`,`repl@${ __REPL_VERSION__ }`]
 
 const cdnOptions = Object.keys(cdnTemplates);
 
-const editorOptions = [
-  { value: 'codemirror', label: locale.editor.codemirror },
-  { value: 'monaco', label: locale.editor.monaco },
-];
+// const editorOptions = [
+//   { value: 'codemirror', label: locale.editor.codemirror },
+//   { value: 'monaco', label: locale.editor.monaco },
+// ];
 
 function handleWindowBlur() {
   if (document.activeElement?.tagName === 'IFRAME') {
@@ -409,14 +409,14 @@ function onChangeVersion(pkg: string, version: string) {
   history.replaceState({}, '', String(url));
 }
 
-function onChangeEditor(editorName: string) {
-  emit('update:editor', editorName);
+// function onChangeEditor(editorName: string) {
+//   emit('update:editor', editorName);
 
-  const url = new URL(location.href);
-  url.searchParams.set('editor', editorName);
+//   const url = new URL(location.href);
+//   url.searchParams.set('editor', editorName);
 
-  history.replaceState({}, '', String(url));
-}
+//   history.replaceState({}, '', String(url));
+// }
 
 function onToggleProductionMode() {
   productionMode.value = productionMode.value !== true;

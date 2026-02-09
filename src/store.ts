@@ -25,10 +25,10 @@ const TS_FILE = 'tsconfig.json';
 
 const importMaps = {
   quasar: [ 'quasar', 'dist/quasar.esm.prod.js' ],
-  '@vue/devtools-api': [ '@vue/devtools-api', 'lib/esm/index.js', '6.5.1' ],
+  '@vue/devtools-api': [ '@vue/devtools-api', 'dist/vue-devtools-api.esm-browser.js', '8.0.6' ],
   'vue-i18n': [ 'vue-i18n', 'dist/vue-i18n.esm-browser.js' ],
   pinia: [ 'pinia', 'dist/pinia.esm-browser.js' ],
-  'vue-demi': [ 'vue-demi', 'lib/index.mjs', '0.13.11' ],
+  'vue-demi': [ 'vue-demi', 'lib/index.mjs', '0.14.10' ],
   'vue-router': [ 'vue-router', 'dist/vue-router.esm-browser.js' ],
 
   '@quasar/extras/roboto-font/roboto-font.css': [ '@quasar/extras', 'roboto-font/roboto-font.css' ],
@@ -36,12 +36,21 @@ const importMaps = {
 } as Record<string, [ string, string, string?]>;
 
 function buildImports(currentImportMap: Record<string, Record<string, string>>, versions: Record<string, string> = {}) {
-  const imports: Record<string, string> = currentImportMap.imports || {};
+  const imports: Record<string, string> = { ...(currentImportMap.imports || {}) };
 
   for (const name of Object.keys(importMaps)) {
     const [ pkg, path, ver ] = importMaps[ name ];
+    let finalPath = path;
 
-    imports[ name ] = getCdnUrl(pkg, path, versions[ pkg ] || ver);
+    if (name === 'quasar') {
+      const qVer = versions[ pkg ] || ver || __QUASAR_VERSION__;
+      const [ major, minor ] = qVer.split('.').map((v) => parseInt(v, 10));
+      if (major > 2 || (major === 2 && minor >= 16)) {
+        finalPath = 'dist/quasar.client.js';
+      }
+    }
+
+    imports[ name ] = getCdnUrl(pkg, finalPath, versions[ pkg ] || ver);
   }
 
   return {
@@ -56,7 +65,7 @@ function patchTsConfig(code: string, versions: Record<string, string> = {}) {
     const moduleResolution = parseInt(versions.typescript.split('.')[ 0 ], 10) < 5 ? 'Node' : 'Bundler';
     tsConfig.compilerOptions.moduleResolution = moduleResolution;
     return JSON.stringify(tsConfig, null, 2);
-  } catch (e) {
+  } catch {
     // caught
   }
   return code;

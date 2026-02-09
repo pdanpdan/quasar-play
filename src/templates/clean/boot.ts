@@ -1,11 +1,13 @@
 import type { App } from 'vue';
 import { Quasar } from 'quasar';
+import * as QuasarComponents from 'quasar';
 
 // CHECK FULL DEMO for more examples - open another tab and rest to FULL EXAMPLE
 
 // function is awaited before continue
 export default function ({ app }: { app: App; }) {
   app.use(Quasar, {
+    components: { ...QuasarComponents },
     plugins: {},
 
     config: {

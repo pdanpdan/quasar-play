@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect, shallowRef, computed, ref, watch, onMounted } from 'vue';
+import { watchEffect, shallowRef, computed, ref, watch, onMounted, markRaw } from 'vue';
 import merge from 'deepmerge';
 
 import TopBar from './components/TopBar.vue';
@@ -52,10 +52,11 @@ async function handleKeyDown(event: KeyboardEvent) {
 const urlSearch = new URLSearchParams(location.search);
 
 const editor = shallowRef({});
-const editorName = ref((urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco');
+// const editorName = ref((urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco');
+const editorName = ref('codemirror');
 watch(editorName, async () => {
-  editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => module.default);
-});
+  editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => markRaw(module.default));
+}, { immediate: true });
 
 const versions = parseVersions();
 
@@ -70,8 +71,6 @@ const repl = await useRepl({
 });
 
 const ReplComponent = await import('@pdanpdan/vue-repl').then((module) => module.Repl);
-editor.value = await import(editorName.value === 'codemirror' ? '@pdanpdan/vue-repl/codemirror-editor' : '@pdanpdan/vue-repl/monaco-editor').then((module) => module.default);
-
 const { ssr, autoSave } = repl;
 
 // enable experimental features
@@ -88,7 +87,7 @@ const sfcOptions = computed(() => {
     if (objFromUrl === Object(objFromUrl)) {
       obj = merge(obj, objFromUrl);
     }
-  } catch (e) {
+  } catch {
     // caught
   }
 
@@ -112,17 +111,17 @@ const previewOptions = computed(() => {
     if (objFromUrl === Object(objFromUrl)) {
       obj = merge(obj, objFromUrl);
     }
-  } catch (e) {
+  } catch {
     // caught
   }
 
   return obj;
 });
 
-// persist state
-watchEffect(() => history.replaceState({}, '', repl.replStore.serialize()));
-
 onMounted(() => {
+  // persist state
+  watchEffect(() => history.replaceState({}, '', repl.replStore.serialize()));
+
   if ('virtualKeyboard' in navigator) {
     (navigator.virtualKeyboard as { overlaysContent: boolean }).overlaysContent = true;
   }

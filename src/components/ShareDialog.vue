@@ -27,14 +27,14 @@
 
       <q-separator inset />
 
-      <q-card-section class="q-py-xs">
+      <!-- <q-card-section class="q-py-xs">
         <q-option-group
           color="primary"
           v-model="settings.editor"
           :options="editorOptions"
           inline
         />
-      </q-card-section>
+      </q-card-section> -->
 
       <q-card-section v-if="shareUrl.length <= 2953" class="q-py-xs q-px-sm">
         <vue-qrcode
@@ -81,15 +81,16 @@ const previewModeOptions = [
   { value: 'ssr', label: locale.shareOptions.outputSSR },
 ];
 
-const editorOptions = [
-  { value: 'monaco', label: locale.shareOptions.editorMonaco },
-  { value: 'codemirror', label: locale.shareOptions.editorMirror },
-];
+// const editorOptions = [
+//   { value: 'monaco', label: locale.shareOptions.editorMonaco },
+//   { value: 'codemirror', label: locale.shareOptions.editorMirror },
+// ];
 
 const urlSearch = new URLSearchParams(location.search);
 settings.preview = [ '', 'true', 't', '1' ].includes(String(urlSearch.get('preview')).toLowerCase()) ? 'output' : 'code';
 settings.previewMode = (urlSearch.get('previewMode') || urlSearch.get('preview-mode') || 'preview').toLowerCase();
-settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco';
+// settings.editor = (urlSearch.get('editor') || 'monaco').toLowerCase().includes('mir') ? 'codemirror' : 'monaco';
+settings.editor = 'codemirror';
 </script>
 
 <script setup lang="ts">

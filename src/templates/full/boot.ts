@@ -1,5 +1,6 @@
 import type { App } from 'vue';
 import { Quasar } from 'quasar';
+import * as QuasarComponents from 'quasar';
 
 /*
 Add imports as needed to `Import Map`
@@ -67,6 +68,7 @@ export default function ({ app }: { app: App; }) {
   }));
 
   app.use(Quasar, {
+    components: { ...QuasarComponents },
     plugins: {
       // Notify,
       // Dialog,
